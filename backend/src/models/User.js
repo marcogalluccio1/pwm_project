@@ -8,16 +8,26 @@ const UserSchema = new mongoose.Schema(
     passwordHash: { type: String, required: true, select: false },
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, required: true, trim: true },
-    companyName: {
-      type: String,
-      required: function () { return this.role === "seller"; },
-      trim: true,
-    },
     vatNumber: {
       type: String,
       required: function () { return this.role === "seller"; },
       trim: true,
-    }
+    },
+    payment: {
+      method: {
+        type: String,
+        enum: ["card", "prepaid", "cash"],
+        default: "card",
+      },
+      cardBrand: { type: String, trim: true }, 
+      cardLast4: { type: String, trim: true }, 
+      holderName: { type: String, trim: true },
+    },
+
+    preferences: {
+      favoriteMealTypes: [{ type: String, trim: true }],
+      marketingOptIn: { type: Boolean, default: false },
+    },
   },
   { timestamps: true }
 );

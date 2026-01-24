@@ -16,7 +16,7 @@ const router = express.Router();
 *   post:
 *     tags: [Auth]
 *     summary: Register a new user (customer or seller)
-*     description: firstName and lastName are required for all users. For sellers, companyName and vatNumber are also required.
+*     description: firstName and lastName are required for all users. For sellers, vatNumber is also required.
 *     requestBody:
 *       required: true
 *       content:
@@ -30,7 +30,6 @@ const router = express.Router();
 *               role: { type: string, enum: [customer, seller] }
 *               firstName: { type: string }
 *               lastName: { type: string }
-*               companyName: { type: string, description: "Required if role is seller" }
 *               vatNumber: { type: string, description: "Required if role is seller" }
 *     responses:
 *       201: { description: Created (returns token + user) }
@@ -77,32 +76,46 @@ router.post("/login", login);
 router.get("/me", requireAuth, me);
 
 /**
- * @swagger
- * /api/auth/me:
- *   put:
- *     tags: [Auth]
- *     summary: Update authenticated user profile
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email: { type: string }
- *               firstName: { type: string }
- *               lastName: { type: string }
- *               companyName: { type: string }
- *               vatNumber: { type: string }
- *               password: { type: string }
- *     responses:
- *       200: { description: OK (returns updated user) }
- *       400: { description: Invalid input data }
- *       401: { description: Missing or invalid token }
- *       409: { description: Email already registered }
- */
+* @swagger
+* /api/auth/me:
+*   put:
+*     tags: [Auth]
+*     summary: Update authenticated user profile
+*     security:
+*       - bearerAuth: []
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               email: { type: string }
+*               firstName: { type: string }
+*               lastName: { type: string }
+*               vatNumber: { type: string }
+*               password: { type: string }
+*               payment:
+*                 type: object
+*                 properties:
+*                   method: { type: string, enum: [card, prepaid, cash_on_delivery] }
+*                   cardBrand: { type: string }
+*                   cardLast4: { type: string }
+*                   holderName: { type: string }
+*               preferences:
+*                 type: object
+*                 properties:
+*                   favoriteMealTypes:
+*                     type: array
+*                     items: { type: string }
+*                   marketingOptIn: { type: boolean }
+*     responses:
+*       200: { description: OK (returns updated user) }
+*       400: { description: Invalid input data }
+*       401: { description: Missing or invalid token }
+*       409: { description: Email already registered }
+*/
+
 router.put("/me", requireAuth, updateMe);
 
 /**

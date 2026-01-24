@@ -15,7 +15,7 @@ export const me = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    const { email, password, role, firstName, lastName, companyName, vatNumber } = req.body;
+    const { email, password, role, firstName, lastName, vatNumber } = req.body;
 
   if (!email || !password || !role || !firstName || !lastName) {
     return res.status(400).json({
@@ -32,9 +32,9 @@ export const register = async (req, res) => {
   }
 
   if (role === "seller") {
-    if (!companyName || !vatNumber) {
+    if (!vatNumber) {
       return res.status(400).json({
-        message: "companyName and vatNumber are required for seller accounts",
+        message: "vatNumber is required for seller accounts",
       });
     }
   }
@@ -49,7 +49,6 @@ export const register = async (req, res) => {
       role,
       firstName,
       lastName,
-      companyName: role === "seller" ? companyName : undefined,
       vatNumber: role === "seller" ? vatNumber : undefined,
     });
 
@@ -112,7 +111,7 @@ export const login = async (req, res) => {
 
 export const updateMe = async (req, res) => {
   try {
-    const { email, firstName, lastName, companyName, vatNumber, password } = req.body;
+    const { email, firstName, lastName, vatNumber, password } = req.body;
 
     const user = await User.findById(req.user.id).select("+passwordHash");
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -129,8 +128,53 @@ export const updateMe = async (req, res) => {
     if (typeof firstName !== "undefined") user.firstName = firstName;
     if (typeof lastName !== "undefined") user.lastName = lastName;
 
+    if (typeof req.body.payment !== "undefined") {
+      const p = req.body.payment;
+
+      if (p === null) {
+        user.payment = undefined; 
+      } else {
+        const allowedMethods = ["card", "prepaid", "cash"];
+        if (p.method && !allowedMethods.includes(p.method)) {
+          return res.status(400).json({ message: "Invalid payment method" });
+        }
+
+        user.payment = {
+          method: p.method ?? user.payment?.method ?? "card",
+          cardBrand: p.cardBrand ?? user.payment?.cardBrand,
+          cardLast4: p.cardLast4 ?? user.payment?.cardLast4,
+          holderName: p.holderName ?? user.payment?.holderName,
+        };
+      }
+    }
+
+    if (typeof req.body.preferences !== "undefined") {
+      const pref = req.body.preferences;
+
+      if (pref === null) {
+        user.preferences = undefined; 
+      } else {
+        //favoriteMealTypes: array of strings
+        if (
+          "favoriteMealTypes" in pref &&
+          pref.favoriteMealTypes !== undefined &&
+          !Array.isArray(pref.favoriteMealTypes)
+        ) {
+          return res.status(400).json({ message: "preferences.favoriteMealTypes must be an array" });
+        }
+
+        if ("marketingOptIn" in pref && typeof pref.marketingOptIn !== "boolean") {
+          return res.status(400).json({ message: "preferences.marketingOptIn must be a boolean" });
+        }
+
+        user.preferences = {
+          favoriteMealTypes: pref.favoriteMealTypes ?? user.preferences?.favoriteMealTypes ?? [],
+          marketingOptIn: pref.marketingOptIn ?? user.preferences?.marketingOptIn ?? false,
+        };
+      }
+    }
+
     if (user.role === "seller") {
-      if (typeof companyName !== "undefined") user.companyName = companyName;
       if (typeof vatNumber !== "undefined") user.vatNumber = vatNumber;
     }
 
