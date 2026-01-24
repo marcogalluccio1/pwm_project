@@ -128,27 +128,53 @@ export const updateMe = async (req, res) => {
     if (typeof firstName !== "undefined") user.firstName = firstName;
     if (typeof lastName !== "undefined") user.lastName = lastName;
 
-    if (typeof req.body.payment !== "undefined") {
+    if ("payment" in req.body) {
       const p = req.body.payment;
 
       if (p === null) {
-        user.payment = undefined; 
+        user.payment = undefined;
       } else {
+        if (typeof p !== "object") {
+          return res.status(400).json({ message: "payment must be an object or null" });
+        }
+
         const allowedMethods = ["card", "prepaid", "cash"];
-        if (p.method && !allowedMethods.includes(p.method)) {
+        if (!p.method || !allowedMethods.includes(p.method)) {
           return res.status(400).json({ message: "Invalid payment method" });
         }
 
-        user.payment = {
-          method: p.method ?? user.payment?.method ?? "card",
-          cardBrand: p.cardBrand ?? user.payment?.cardBrand,
-          cardLast4: p.cardLast4 ?? user.payment?.cardLast4,
-          holderName: p.holderName ?? user.payment?.holderName,
-        };
+        const isCardLike = p.method === "card" || p.method === "prepaid";
+
+        //validation of card infos
+        if (isCardLike) {
+          const { cardBrand, cardLast4, holderName } = p;
+
+          if (!cardBrand || typeof cardBrand !== "string") {
+            return res.status(400).json({ message: "payment.cardBrand is required for card / prepaid" });
+          }
+
+          if (!cardLast4 || typeof cardLast4 !== "string" || !/^\d{4}$/.test(cardLast4)) {
+            return res.status(400).json({ message: "payment.cardLast4 must be exactly 4 digits for card / prepaid" });
+          }
+
+          if (!holderName || typeof holderName !== "string") {
+            return res.status(400).json({ message: "payment.holderName is required for card / prepaid" });
+          }
+
+          user.payment = {
+            method: p.method,
+            cardBrand: cardBrand.trim(),
+            cardLast4,
+            holderName: holderName.trim(),
+          };
+        } else {
+          user.payment = { method: "cash" };
+        }
       }
     }
 
-    if (typeof req.body.preferences !== "undefined") {
+
+    if ("preferences" in req.body) {
       const pref = req.body.preferences;
 
       if (pref === null) {

@@ -81,6 +81,7 @@ router.get("/me", requireAuth, me);
 *   put:
 *     tags: [Auth]
 *     summary: Update authenticated user profile
+*     description: If payment method is card or prepaid, cardBrand/cardLast4/holderName are required.
 *     security:
 *       - bearerAuth: []
 *     requestBody:
@@ -98,7 +99,7 @@ router.get("/me", requireAuth, me);
 *               payment:
 *                 type: object
 *                 properties:
-*                   method: { type: string, enum: [card, prepaid, cash_on_delivery] }
+*                   method: { type: string, enum: [card, prepaid, cash] }
 *                   cardBrand: { type: string }
 *                   cardLast4: { type: string }
 *                   holderName: { type: string }
