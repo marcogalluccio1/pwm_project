@@ -1,41 +1,111 @@
 import Restaurant from "../models/Restaurant.js";
 
-export const createRestaurant = async (req, res) => {
-  try {
-    const { address, city, phone } = req.body;
-
-    if (!address || !city) {
-      return res.status(400).json({ message: " address e city sono obbligatori" });
-    }
-
-    const existing = await Restaurant.findOne({ seller: req.user.id });
-    if (existing) {
-      return res.status(409).json({ message: "Hai già un ristorante" });
-    }
-
-    const restaurant = await Restaurant.create({
-      address,
-      city,
-      phone,
-      seller: req.user.id,
-    });
-
-    res.status(201).json(restaurant);
-  } catch (err) {
-    console.error("CREATE_RESTAURANT_ERROR:", err);
-    res.status(500).json({ message: "Errore server" });
-  }
-};
-
 export const getRestaurants = async (req, res) => {
-  const restaurants = await Restaurant.find().populate("seller", "email");
-  res.json(restaurants);
+  try {
+    const { city } = req.query;
+
+    const filter = {};
+    if (city) {
+      filter.city = { $regex: city, $options: "i" };
+    }
+
+    const restaurants = await Restaurant.find(filter);
+    res.json(restaurants);
+  } catch (err) {
+    console.error("GET_RESTAURANTS_ERROR:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 export const getRestaurantById = async (req, res) => {
-  const restaurant = await Restaurant.findById(req.params.id).populate("seller", "email");
-  if (!restaurant) {
-    return res.status(404).json({ message: "Ristorante non trovato" });
+  try {
+    const restaurant = await Restaurant.findById(req.params.id);
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+    res.json(restaurant);
+  } catch (err) {
+    console.error("GET_RESTAURANT_BY_ID_ERROR:", err);
+    res.status(500).json({ message: "Server error" });
   }
-  res.json(restaurant);
 };
+
+export const getMyRestaurant = async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findOne({ sellerId: req.user.id });
+    res.json(restaurant);
+  } catch (err) {
+    console.error("GET_MY_RESTAURANT_ERROR:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const createRestaurant = async (req, res) => {
+  try {
+    const { name, phone, vatNumber, address, city } = req.body;
+
+    if (!name || !phone || !vatNumber || !address || !city) {
+      return res.status(400).json({ message: "name, phone, vatNumber, address and city are required" });
+    }
+    const existing = await Restaurant.findOne({ sellerId: req.user.id });
+    if (existing) {
+      return res.status(409).json({ message: "Seller already owns a restaurant" });
+    }
+
+    const restaurant = await Restaurant.create({
+      sellerId: req.user.id,
+      name,
+      phone,
+      vatNumber,
+      address,
+      city,
+    });
+
+    return res.status(201).json(restaurant);
+  } catch (err) {
+    if (err?.code === 11000 && err?.keyPattern?.sellerId) {
+      return res.status(409).json({ message: "Seller already owns a restaurant" });
+    }
+    console.error("CREATE_RESTAURANT_ERROR:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const updateMyRestaurant = async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findOne({ sellerId: req.user.id });
+    if (!restaurant) {  
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    const allowed = ["name", "phone", "vatNumber", "address", "city"];
+    for (const k of allowed) {
+      if (k in req.body) {
+        restaurant[k] = req.body[k];
+      }
+    }
+
+    await restaurant.save();
+    res.json(restaurant);
+  } catch (err) {
+    console.error("UPDATE_MY_RESTAURANT_ERROR:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const deleteMyRestaurant = async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findOne({ sellerId: req.user.id });
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    await Restaurant.findByIdAndDelete(restaurant._id);
+    res.status(204).end();
+  } catch (err) {
+    console.error("DELETE_MY_RESTAURANT_ERROR:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+

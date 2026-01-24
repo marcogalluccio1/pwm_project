@@ -4,13 +4,17 @@ import dotenv from "dotenv";
 import connectDB from "./database/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import restaurantRoutes from "./routes/restaurantRoutes.js";
-
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerOptions from "./swagger.js";
 
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 connectDB();
 
