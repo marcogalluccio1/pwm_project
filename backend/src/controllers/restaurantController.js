@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Restaurant from "../models/Restaurant.js";
 
 export const getRestaurants = async (req, res) => {

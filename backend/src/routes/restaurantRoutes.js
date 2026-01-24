@@ -14,6 +14,9 @@ import {
   deleteMyRestaurant,
 } from "../controllers/restaurantController.js";
 import { requireAuth, requireRole } from "../middleware/authMiddleware.js";
+import { setMyMenu } from "../controllers/menuController.js";
+import { getRestaurantMenu, getMyRestaurantMenu } from "../controllers/menuController.js";
+
 const router = express.Router();
 
 /**
@@ -127,6 +130,40 @@ router.delete("/mine", requireAuth, requireRole("seller"), deleteMyRestaurant);
 
 /**
  * @swagger
+ * /api/restaurants/mine/menu:
+ *   get:
+ *     tags: [Restaurants]
+ *     summary: Get my restaurant menu (seller only, includes unavailable items)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200: { description: OK (full menu, includes unavailable items) }
+ *       401: { description: Missing or invalid token }
+ *       403: { description: Forbidden (not seller) }
+ *       404: { description: Restaurant not found }
+ */
+router.get("/mine/menu", requireAuth, requireRole("seller"), getMyRestaurantMenu);
+
+/**
+ * @swagger
+ * /api/restaurants/{id}/menu:
+ *   get:
+ *     tags: [Restaurants]
+ *     summary: Get restaurant public menu (available items only)
+ *     description: Returns the restaurant menu with meal details (name, thumbnail, ingredients) and restaurant-specific price.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200: { description: OK (restaurant menu) }
+ *       404: { description: Restaurant not found }
+ */
+router.get("/:id/menu", getRestaurantMenu);
+
+/**
+ * @swagger
  * /api/restaurants/{id}:
  *   get:
  *     tags: [Restaurants]
@@ -141,5 +178,40 @@ router.delete("/mine", requireAuth, requireRole("seller"), deleteMyRestaurant);
  *       404: { description: Restaurant not found }
  */
 router.get("/:id", getRestaurantById);
+
+/**
+ * @swagger
+ * /api/restaurants/mine/menu:
+ *   put:
+ *     tags: [Restaurants]
+ *     summary: Set my restaurant menu (replace entire menu) (seller only)
+ *     description: Set the menu with the provided items.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [items]
+ *             properties:
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required: [mealId, price]
+ *                   properties:
+ *                     mealId: { type: string }
+ *                     price: { type: number }
+ *                     isAvailable: { type: boolean }
+ *     responses:
+ *       200: { description: OK (updated menu items) }
+ *       400: { description: Invalid input data }
+ *       401: { description: Missing or invalid token }
+ *       403: { description: Forbidden (not seller) }
+ *       404: { description: Restaurant not found or some meals not found }
+ */
+router.put("/mine/menu", requireAuth, requireRole("seller"), setMyMenu);
 
 export default router;

@@ -1,0 +1,100 @@
+/**
+* @swagger
+* tags:
+*   - name: Meals
+*     description: Global meals catalog and custom meals
+*/
+
+import express from "express";
+import { getMeals, getMealById, createCustomMeal } from "../controllers/mealController.js";
+import { requireAuth, requireRole } from "../middleware/authMiddleware.js";
+
+const router = express.Router();
+
+/**
+* @swagger
+* /api/meals:
+*   get:
+*     tags: [Meals]
+*     summary: Search meals (public)
+*     description: Filter meals by category, name and price range. You can also filter by ingredients.
+*     parameters:
+*       - in: query
+*         name: name
+*         schema: { type: string }
+*         description: Partial match on meal name (case-insensitive)
+*       - in: query
+*         name: category
+*         schema: { type: string }
+*         description: Partial match on meal category/type (case-insensitive)
+*       - in: query
+*         name: minPrice
+*         schema: { type: number }
+*         description: Minimum base price
+*       - in: query
+*         name: maxPrice
+*         schema: { type: number }
+*         description: Maximum base price
+*       - in: query
+*         name: ingredient
+*         schema: { type: string }
+*         description: Comma-separated ingredients (e.g. "onion,garlic") - must all be present
+*     responses:
+*       200: { description: OK (list of meals) }
+*       400: { description: Invalid query parameters }
+*/
+router.get("/", getMeals);
+
+/**
+* @swagger
+* /api/meals/{id}:
+*   get:
+*     tags: [Meals]
+*     summary: Get meal details by ID (public)
+*     parameters:
+*       - in: path
+*         name: id
+*         required: true
+*         schema: { type: string }
+*     responses:
+*       200: { description: OK (meal details) }
+*       404: { description: Meal not found }
+*/
+router.get("/:id", getMealById);
+
+/**
+* @swagger
+* /api/meals:
+*   post:
+*     tags: [Meals]
+*     summary: Create a custom meal (seller only)
+*     security:
+*       - bearerAuth: []
+*     description: Creates a seller-owned custom meal (not part of the global JSON catalog).
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             required: [name, category, basePrice, thumbnailUrl, ingredients]
+*             properties:
+*               name: { type: string }
+*               category: { type: string }
+*               basePrice: { type: number }
+*               thumbnailUrl: { type: string, description: "Public URL of the meal image" }
+*               ingredients:
+*                 type: array
+*                 items: { type: string }
+*               measures:
+*                 type: array
+*                 items: { type: string }
+*     responses:
+*       201: { description: Created (custom meal created) }
+*       400: { description: Invalid input data }
+*       401: { description: Missing or invalid token }
+*       403: { description: Forbidden (not seller) }
+*/
+router.post("/", requireAuth, requireRole("seller"), createCustomMeal);
+
+export default router;
