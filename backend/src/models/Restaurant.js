@@ -22,12 +22,6 @@ const RestaurantSchema = new mongoose.Schema(
       trim: true,
     },
 
-    vatNumber: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
     address: {
       type: String,
       required: true,

@@ -17,20 +17,24 @@ import { requireAuth, requireRole } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 /**
- * @swagger
- * /api/restaurants:
- *   get:
- *     tags: [Restaurants]
- *     summary: Get all restaurants (public)
- *     description: Optional search by city (case-insensitive).
- *     parameters:
- *       - in: query
- *         name: city
- *         schema: { type: string }
- *         description: Filter restaurants by city
- *     responses:
- *       200: { description: OK (list of restaurants) }
- */
+* @swagger
+* /api/restaurants:
+*   get:
+*     tags: [Restaurants]
+*     summary: Get all restaurants (public)
+*     description: Optional search by city and/or name (case-insensitive partial match).
+*     parameters:
+*       - in: query
+*         name: city
+*         schema: { type: string }
+*         description: Filter restaurants by city (e.g. Milano)
+*       - in: query
+*         name: name
+*         schema: { type: string }
+*         description: Filter restaurants by name (partial match)
+*     responses:
+*       200: { description: OK (list of restaurants) }
+*/
 router.get("/", getRestaurants);
 
 /**
@@ -62,11 +66,10 @@ router.get("/mine", requireAuth, requireRole("seller"), getMyRestaurant);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, phone, vatNumber, address, city]
+ *             required: [name, phone, address, city]
  *             properties:
  *               name: { type: string }
  *               phone: { type: string }
- *               vatNumber: { type: string }
  *               address: { type: string }
  *               city: { type: string }
  *     responses:
@@ -95,7 +98,6 @@ router.post("/", requireAuth, requireRole("seller"), createRestaurant);
  *             properties:
  *               name: { type: string }
  *               phone: { type: string }
- *               vatNumber: { type: string }
  *               address: { type: string }
  *               city: { type: string }
  *     responses:

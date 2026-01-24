@@ -2,12 +2,10 @@ import Restaurant from "../models/Restaurant.js";
 
 export const getRestaurants = async (req, res) => {
   try {
-    const { city } = req.query;
-
+    const { city, name } = req.query;
     const filter = {};
-    if (city) {
-      filter.city = { $regex: city, $options: "i" };
-    }
+    if (city) filter.city = { $regex: city, $options: "i" };
+    if (name) filter.name = { $regex: name, $options: "i" };
 
     const restaurants = await Restaurant.find(filter);
     res.json(restaurants);
@@ -42,11 +40,14 @@ export const getMyRestaurant = async (req, res) => {
 
 export const createRestaurant = async (req, res) => {
   try {
-    const { name, phone, vatNumber, address, city } = req.body;
+    const { name, phone, address, city } = req.body;
 
-    if (!name || !phone || !vatNumber || !address || !city) {
-      return res.status(400).json({ message: "name, phone, vatNumber, address and city are required" });
+    if (!name || !phone || !address || !city) {
+      return res.status(400).json({
+        message: "name, phone, address and city are required",
+      });
     }
+
     const existing = await Restaurant.findOne({ sellerId: req.user.id });
     if (existing) {
       return res.status(409).json({ message: "Seller already owns a restaurant" });
@@ -56,7 +57,6 @@ export const createRestaurant = async (req, res) => {
       sellerId: req.user.id,
       name,
       phone,
-      vatNumber,
       address,
       city,
     });
@@ -74,11 +74,11 @@ export const createRestaurant = async (req, res) => {
 export const updateMyRestaurant = async (req, res) => {
   try {
     const restaurant = await Restaurant.findOne({ sellerId: req.user.id });
-    if (!restaurant) {  
+    if (!restaurant) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    const allowed = ["name", "phone", "vatNumber", "address", "city"];
+    const allowed = ["name", "phone", "address", "city"];
     for (const k of allowed) {
       if (k in req.body) {
         restaurant[k] = req.body[k];

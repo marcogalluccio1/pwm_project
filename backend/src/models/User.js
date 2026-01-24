@@ -6,10 +6,18 @@ const UserSchema = new mongoose.Schema(
     role: { type: String, enum: ["customer", "seller"], required: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     passwordHash: { type: String, required: true, select: false },
-    firstName: String,
-    lastName: String,
-    companyName: String,
-    vatNumber: String,
+    firstName: { type: String, required: true, trim: true },
+    lastName: { type: String, required: true, trim: true },
+    companyName: {
+      type: String,
+      required: function () { return this.role === "seller"; },
+      trim: true,
+    },
+    vatNumber: {
+      type: String,
+      required: function () { return this.role === "seller"; },
+      trim: true,
+    }
   },
   { timestamps: true }
 );

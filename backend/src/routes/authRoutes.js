@@ -2,10 +2,10 @@
  * @swagger
  * tags:
  *   - name: Auth
- *     description: Registration, login and user's profile
+ *     description: Registration, login and user profile
  */
 import express from "express";
-import { register, login, me } from "../controllers/authController.js";
+import { register, login, me, updateMe, deleteMe } from "../controllers/authController.js";
 import { requireAuth } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -15,22 +15,23 @@ const router = express.Router();
 * /api/auth/register:
 *   post:
 *     tags: [Auth]
-*     summary: Sign up a new user (customer o seller)
+*     summary: Register a new user (customer or seller)
+*     description: firstName and lastName are required for all users. For sellers, companyName and vatNumber are also required.
 *     requestBody:
 *       required: true
 *       content:
 *         application/json:
 *           schema:
 *             type: object
-*             required: [email, password, role]
+*             required: [email, password, role, firstName, lastName]
 *             properties:
 *               email: { type: string }
 *               password: { type: string }
 *               role: { type: string, enum: [customer, seller] }
 *               firstName: { type: string }
 *               lastName: { type: string }
-*               companyName: { type: string }
-*               vatNumber: { type: string }
+*               companyName: { type: string, description: "Required if role is seller" }
+*               vatNumber: { type: string, description: "Required if role is seller" }
 *     responses:
 *       201: { description: Created (returns token + user) }
 *       400: { description: Invalid input data }
@@ -39,40 +40,83 @@ const router = express.Router();
 router.post("/register", register);
 
 /**
-* @swagger
-* /api/auth/login:
-*   post:
-*     tags: [Auth]
-*     summary: User login and JWT generation
-*     requestBody:
-*       required: true
-*       content:
-*         application/json:
-*           schema:
-*             type: object
-*             required: [email, password]
-*             properties:
-*               email: { type: string }
-*               password: { type: string }
-*     responses:
-*       200: { description: OK (returns token and user) }
-*       400: { description: Missing or invalid data }
-*       401: { description: Invalid credentials }
-*/
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     tags: [Auth]
+ *     summary: User login and JWT generation
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email: { type: string }
+ *               password: { type: string }
+ *     responses:
+ *       200: { description: OK (returns token + user) }
+ *       400: { description: Missing or invalid data }
+ *       401: { description: Invalid credentials }
+ */
 router.post("/login", login);
 
 /**
-* @swagger
-* /api/auth/me:
-*   get:
-*     tags: [Auth]
-*     summary: Get authenticated user profile
-*     security:
-*       - bearerAuth: []
-*     responses:
-*       200: { description: OK (returns user profile) }
-*       401: { description: Missing or invalid token }
-*/
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Get authenticated user profile
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200: { description: OK (returns user profile) }
+ *       401: { description: Missing or invalid token }
+ */
 router.get("/me", requireAuth, me);
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   put:
+ *     tags: [Auth]
+ *     summary: Update authenticated user profile
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email: { type: string }
+ *               firstName: { type: string }
+ *               lastName: { type: string }
+ *               companyName: { type: string }
+ *               vatNumber: { type: string }
+ *               password: { type: string }
+ *     responses:
+ *       200: { description: OK (returns updated user) }
+ *       400: { description: Invalid input data }
+ *       401: { description: Missing or invalid token }
+ *       409: { description: Email already registered }
+ */
+router.put("/me", requireAuth, updateMe);
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   delete:
+ *     tags: [Auth]
+ *     summary: Delete authenticated user profile
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       204: { description: Deleted }
+ *       401: { description: Missing or invalid token }
+ */
+router.delete("/me", requireAuth, deleteMe);
 
 export default router;
