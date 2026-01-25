@@ -38,8 +38,7 @@ const RestaurantSchema = new mongoose.Schema(
     menuItems: [
       {
         mealId: { type: mongoose.Schema.Types.ObjectId, ref: "Meal", required: true },
-        price: { type: Number, required: true, min: 0 }, //can be different from basePrice
-        isAvailable: { type: Boolean, default: true },
+        price: { type: Number, required: true, min: 0 },
       },
     ],
   },

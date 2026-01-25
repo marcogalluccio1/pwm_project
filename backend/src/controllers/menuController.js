@@ -25,14 +25,10 @@ export const setMyMenu = async (req, res) => {
       if (!Number.isFinite(p) || p < 0) {
         return res.status(400).json({ message: `Invalid price for mealId ${it.mealId}` });
       }
-      if ("isAvailable" in it && typeof it.isAvailable !== "boolean") {
-        return res.status(400).json({ message: `isAvailable must be boolean for mealId ${it.mealId}` });
-      }
 
       normalizedMap.set(it.mealId.toString(), {
-        mealId: it.mealId,
+        mealId: new mongoose.Types.ObjectId(it.mealId),
         price: p,
-        isAvailable: "isAvailable" in it ? it.isAvailable : true,
       });
     }
 
@@ -44,11 +40,28 @@ export const setMyMenu = async (req, res) => {
     //verify all meals exist
     if (normalized.length > 0) {
       const ids = normalized.map((i) => i.mealId);
-      const found = await Meal.find({ _id: { $in: ids } }).select("_id");
-      if (found.length !== ids.length) {
-        const foundSet = new Set(found.map((m) => m._id.toString()));
+
+      const foundMeals = await Meal.find({ _id: { $in: ids } })
+        .select("_id isGlobal createdBySellerId")
+        .lean();
+
+      if (foundMeals.length !== ids.length) {
+        const foundSet = new Set(foundMeals.map((m) => m._id.toString()));
         const missing = ids.filter((id) => !foundSet.has(id.toString()));
         return res.status(404).json({ message: "Some meals were not found", missing });
+      }
+
+      //allow to add global meals, and allow custom meals only if created by the same seller
+      const sellerId = String(req.user.id);
+      const notAllowed = foundMeals
+        .filter((m) => m.isGlobal === false && String(m.createdBySellerId) !== sellerId)
+        .map((m) => m._id.toString());
+
+      if (notAllowed.length > 0) {
+        return res.status(403).json({
+          message: "Some meals are not allowed to be added",
+          notAllowed,
+        });
       }
     }
 
@@ -66,43 +79,76 @@ export const setMyMenu = async (req, res) => {
 export const getRestaurantMenu = async (req, res) => {
   try {
     const { id } = req.params;
+    const { name, category, ingredient, minPrice, maxPrice } = req.query;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
     const restaurant = await Restaurant.findById(id)
-      .select("name city menuItems")
+      .select("menuItems")
       .populate({
         path: "menuItems.mealId",
-        select: "name category thumbnailUrl ingredients basePrice isGlobal",
+        select: "name category thumbnailUrl ingredients",
       });
 
     if (!restaurant) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    const menu = (restaurant.menuItems || [])
-    .filter((it) => it.isAvailable === true)
-    .map((it) => ({
-      meal: it.mealId,
-      price: it.price,
-      isAvailable: it.isAvailable,
-    }));
+    const ingList = ingredient
+      ? String(ingredient)
+          .split(",")
+          .map((s) => s.trim().toLowerCase())
+          .filter(Boolean)
+      : [];
 
-    return res.json({
-      restaurant: {
-        id: restaurant._id,
-        name: restaurant.name,
-        city: restaurant.city,
-      },
-      menu,
-    });
+    const menu = (restaurant.menuItems || [])
+      .filter((it) => {
+        if (minPrice !== undefined && it.price < Number(minPrice)) return false;
+        if (maxPrice !== undefined && it.price > Number(maxPrice)) return false;
+        return true;
+      })
+      .filter((it) => {
+        const meal = it.mealId;
+        if (!meal) return false;
+
+        if (name && !String(meal.name || "").toLowerCase().includes(String(name).toLowerCase())) {
+          return false;
+        }
+
+        if (
+          category &&
+          !String(meal.category || "")
+            .toLowerCase()
+            .includes(String(category).toLowerCase())
+        ) {
+          return false;
+        }
+
+        if (ingList.length > 0) {
+          const mealIngredients = Array.isArray(meal.ingredients)
+            ? meal.ingredients.map((x) => String(x).toLowerCase())
+            : [];
+          const hasAll = ingList.every((ing) => mealIngredients.includes(ing));
+          if (!hasAll) return false;
+        }
+
+        return true;
+      })
+      .map((it) => ({
+        meal: it.mealId,
+        price: it.price,
+      }));
+
+    return res.json({ menu });
   } catch (err) {
     console.error("GET_RESTAURANT_MENU_ERROR:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+
 
 export const getMyRestaurantMenu = async (req, res) => {
   try {
@@ -117,11 +163,10 @@ export const getMyRestaurantMenu = async (req, res) => {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    //return every meal, including not available
+    //return every meal
     const menu = (restaurant.menuItems || []).map((it) => ({
       meal: it.mealId,
       price: it.price,
-      isAvailable: it.isAvailable,
     }));
 
     return res.json({ menu });

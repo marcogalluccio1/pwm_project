@@ -25,10 +25,7 @@ export async function loadMealsFromJson() {
       console.log("Meals JSON is not an array, skipping seed.");
       return;
     }
-
-    //TODO: default pricing
-    const DEFAULT_PRICE = 7.99;
-
+  
     const mealsArray = data.map((m) => ({
       externalId: m.idMeal?.toString(),
       name: m.strMeal,
@@ -36,7 +33,6 @@ export async function loadMealsFromJson() {
       thumbnailUrl: m.strMealThumb,
       ingredients: Array.isArray(m.ingredients) ? m.ingredients.filter(Boolean) : [],
       measures: Array.isArray(m.measures) ? m.measures.filter(Boolean) : [],
-      basePrice: DEFAULT_PRICE,
       isGlobal: true,
     }));
 

@@ -10,7 +10,6 @@ const MealSchema = new mongoose.Schema(
     ingredients: [{ type: String, trim: true, index: true }],
     measures: [{ type: String, trim: true }],
 
-    basePrice: { type: Number, required: true, min: 0 }, 
     isGlobal: { type: Boolean, default: true }, //true if it comes from JSON, false if it is a custom meal
     createdBySellerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, //only for custom meals
   },

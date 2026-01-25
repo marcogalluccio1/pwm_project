@@ -133,11 +133,11 @@ router.delete("/mine", requireAuth, requireRole("seller"), deleteMyRestaurant);
  * /api/restaurants/mine/menu:
  *   get:
  *     tags: [Restaurants]
- *     summary: Get my restaurant menu (seller only, includes unavailable items)
+ *     summary: Get my restaurant menu (seller only)
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       200: { description: OK (full menu, includes unavailable items) }
+ *       200: { description: OK }
  *       401: { description: Missing or invalid token }
  *       403: { description: Forbidden (not seller) }
  *       404: { description: Restaurant not found }
@@ -145,21 +145,37 @@ router.delete("/mine", requireAuth, requireRole("seller"), deleteMyRestaurant);
 router.get("/mine/menu", requireAuth, requireRole("seller"), getMyRestaurantMenu);
 
 /**
- * @swagger
- * /api/restaurants/{id}/menu:
- *   get:
- *     tags: [Restaurants]
- *     summary: Get restaurant public menu (available items only)
- *     description: Returns the restaurant menu with meal details (name, thumbnail, ingredients) and restaurant-specific price.
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema: { type: string }
- *     responses:
- *       200: { description: OK (restaurant menu) }
- *       404: { description: Restaurant not found }
- */
+* @swagger
+* /api/restaurants/{id}/menu:
+*   get:
+*     tags: [Restaurants]
+*     summary: Get restaurant public menu
+*     parameters:
+*       - in: path
+*         name: id
+*         required: true
+*         schema: { type: string }
+*       - in: query
+*         name: name
+*         schema: { type: string }
+*       - in: query
+*         name: category
+*         schema: { type: string }
+*       - in: query
+*         name: ingredient
+*         schema: { type: string }
+*         description: Comma-separated ingredients (e.g. "tomato,mozzarella")
+*       - in: query
+*         name: minPrice
+*         schema: { type: number }
+*       - in: query
+*         name: maxPrice
+*         schema: { type: number }
+*     responses:
+*       200: { description: OK }
+*       404: { description: Restaurant not found }
+*/
+
 router.get("/:id/menu", getRestaurantMenu);
 
 /**
@@ -204,12 +220,11 @@ router.get("/:id", getRestaurantById);
  *                   properties:
  *                     mealId: { type: string }
  *                     price: { type: number }
- *                     isAvailable: { type: boolean }
  *     responses:
  *       200: { description: OK (updated menu items) }
  *       400: { description: Invalid input data }
  *       401: { description: Missing or invalid token }
- *       403: { description: Forbidden (not seller) }
+ *       403: { description: Forbidden (not seller or meal not allowed) }
  *       404: { description: Restaurant not found or some meals not found }
  */
 router.put("/mine/menu", requireAuth, requireRole("seller"), setMyMenu);

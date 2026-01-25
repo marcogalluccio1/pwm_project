@@ -1,9 +1,10 @@
 import Meal from "../models/Meal.js";
+import Restaurant from "../models/Restaurant.js";
 import mongoose from "mongoose";
 
 export const getMeals = async (req, res) => {
   try {
-    const { name, category, maxPrice, ingredient } = req.query;
+    const { name, category, ingredient } = req.query;
 
     const filter = {};
 
@@ -13,14 +14,6 @@ export const getMeals = async (req, res) => {
 
     if (category) {
       filter.category = { $regex: category, $options: "i" };
-    }
-
-    if (maxPrice) {
-      const p = Number(maxPrice);
-      if (p < 0) {
-        return res.status(400).json({ message: "maxPrice must be a positive number" });
-      }
-      filter.basePrice = { $lte: p };
     }
 
     if (ingredient) {
@@ -60,15 +53,10 @@ export const getMealById = async (req, res) => {
 
 export const createCustomMeal = async (req, res) => {
   try {
-    const { name, category, thumbnailUrl, ingredients, measures, basePrice } = req.body;
+    const { name, category, thumbnailUrl, ingredients, measures} = req.body;
 
     if (!name || !category || !thumbnailUrl) {
       return res.status(400).json({ message: "name, category, thumbnailUrl are required" });
-    }
-
-    const price = Number(basePrice);
-    if (!Number.isFinite(price) || price < 0) {
-      return res.status(400).json({ message: "basePrice must be a positive number" });
     }
 
     const meal = await Meal.create({
@@ -77,7 +65,6 @@ export const createCustomMeal = async (req, res) => {
       thumbnailUrl,
       ingredients: Array.isArray(ingredients) ? ingredients : [],
       measures: Array.isArray(measures) ? measures : [],
-      basePrice: price,
       isGlobal: false,
       createdBySellerId: req.user.id,
     });
@@ -88,3 +75,105 @@ export const createCustomMeal = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const updateCustomMeal = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ message: "Meal not found" });
+    }
+
+    const meal = await Meal.findOne({
+      _id: id,
+      isGlobal: false,
+      createdBySellerId: req.user.id,
+    });
+
+    if (!meal) {
+      return res.status(404).json({ message: "Meal not found" });
+    }
+
+    const { name, category, thumbnailUrl, ingredients, measures } = req.body;
+
+    if (!name || !category || !thumbnailUrl || !Array.isArray(ingredients)) {
+      return res.status(400).json({ message: "Missing or invalid fields" });
+    }
+
+    meal.name = name;
+    meal.category = category;
+    meal.thumbnailUrl = thumbnailUrl;
+    meal.ingredients = ingredients;
+    meal.measures = Array.isArray(measures) ? measures : [];
+
+    await meal.save();
+    return res.json(meal);
+  } catch (err) {
+    console.error("UPDATE_CUSTOM_MEAL_ERROR:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const deleteCustomMeal = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ message: "Meal not found" });
+    }
+
+    const deleted = await Meal.findOneAndDelete({
+      _id: id,
+      isGlobal: false,
+      createdBySellerId: req.user.id,
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Meal not found" });
+    }
+
+    await Restaurant.updateOne(
+      { sellerId: req.user.id },
+      { $pull: { menuItems: { mealId: deleted._id } } }
+    );
+
+    return res.status(204).send();
+  } catch (err) {
+    console.error("DELETE_CUSTOM_MEAL_ERROR:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getMyCustomMeals = async (req, res) => {
+  try {
+    const meals = await Meal.find({
+      isGlobal: false,
+      createdBySellerId: req.user.id,
+    }).sort({ name: 1 });
+
+    return res.json(meals);
+  } catch (err) {
+    console.error("GET_MY_CUSTOM_MEALS_ERROR:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getSelectableMeals = async (req, res) => {
+  try {
+    const meals = await Meal.find(
+      {
+        $or: [
+          { isGlobal: true },
+          { isGlobal: false, createdBySellerId: req.user.id },
+        ],
+      },
+      "name category thumbnailUrl ingredients"
+    ).sort({ name: 1 });
+
+    return res.json(meals);
+  } catch (err) {
+    console.error("GET_SELECTABLE_MEALS_ERROR:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
