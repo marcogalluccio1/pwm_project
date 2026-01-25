@@ -59,6 +59,13 @@ router.post("/", requireAuth, requireRole("customer"), createOrder);
  *     summary: Get my orders (customer)
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         required: false
+ *         schema: 
+ *             type: string
+ *             enum: [active, past]
  *     responses:
  *       200: { description: OK }
  *       401: { description: Missing/invalid token }

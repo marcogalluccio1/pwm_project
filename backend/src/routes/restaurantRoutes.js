@@ -126,6 +126,7 @@ router.put("/mine", requireAuth, requireRole("seller"), updateMyRestaurant);
  *       401: { description: Missing or invalid token }
  *       403: { description: Forbidden (not seller) }
  *       404: { description: Restaurant not found }
+ *       409: { description: Conflict - restaurant has active orders }
  */
 router.delete("/mine", requireAuth, requireRole("seller"), deleteMyRestaurant);
 

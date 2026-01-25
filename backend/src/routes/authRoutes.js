@@ -130,6 +130,8 @@ router.put("/me", requireAuth, updateMe);
  *     responses:
  *       204: { description: Deleted }
  *       401: { description: Missing or invalid token }
+ *       404: { description: User not found }
+ *       409: { description: Conflict - active orders prevent deletion }
  */
 router.delete("/me", requireAuth, deleteMe);
 
