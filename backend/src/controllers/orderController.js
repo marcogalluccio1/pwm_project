@@ -74,12 +74,12 @@ export const createOrder = async (req, res) => {
     const user = await User.findById(userId);
 
     //payment method validation
-    const resolvedPaymentMethod =
-      req.body.paymentMethod || user?.payment?.method;
+    const resolvedPaymentMethod = user?.payment?.method;
+
 
     if (!resolvedPaymentMethod) {
       return res.status(400).json({
-        message: "Payment method is required to place an order"
+        message: "Payment method is required to place an order. Set it in your profile."
       });
     }
 
