@@ -2,12 +2,14 @@ import mongoose from "mongoose";
 import Order from "../models/Order.js";
 import Restaurant from "../models/Restaurant.js";
 import Meal from "../models/Meal.js";
+const User = require("../models/User");
 
 function toNumberEnv(key, fallback) {
   const n = Number(process.env[key]);
   return Number.isFinite(n) ? n : fallback;
 }
 
+//delivery is not implemented yet
 function calculateDeliveryFee(distanceKm) {
   const baseFee = toNumberEnv("DELIVERY_BASE_FEE", 0);
   const perKm = toNumberEnv("DELIVERY_COST_PER_KM", 0);
@@ -68,6 +70,23 @@ export const createOrder = async (req, res) => {
       (restaurant.menuItems || []).map((it) => [it.mealId.toString(), Number(it.price)])
     );
 
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+
+    //payment method validation
+    const resolvedPaymentMethod =
+      req.body.paymentMethod || user?.payment?.method;
+
+    if (!resolvedPaymentMethod) {
+      return res.status(400).json({
+        message: "Payment method is required to place an order"
+      });
+    }
+
+    if (!["card", "prepaid", "cash"].includes(resolvedPaymentMethod)) {
+      return res.status(400).json({ message: "Invalid payment method" });
+    }
+
     //items validation
     const normalized = [];
     const requestedMealIds = [];
@@ -90,8 +109,9 @@ export const createOrder = async (req, res) => {
         });
       }
 
-      normalized.push({ mealId: new mongoose.Types.ObjectId(it.mealId), quantity: qty });
-      requestedMealIds.push(key);
+      const objId = new mongoose.Types.ObjectId(it.mealId);
+      normalized.push({ mealId: objId, quantity: qty });
+      requestedMealIds.push(objId);
     }
 
     const meals = await Meal.find({ _id: { $in: requestedMealIds } }).select("_id name");
@@ -117,11 +137,18 @@ export const createOrder = async (req, res) => {
       };
     });
 
-    const deliveryFee = 0;
     const total = subtotal;
 
     const prepMinutes = toNumberEnv("PREP_MINUTES_PER_ORDER", 10);
-    const estimatedReadyAt = new Date(Date.now() + prepMinutes * 60 * 1000);
+
+    const queueCount = await Order.countDocuments({
+      restaurantId: restaurant._id,
+      status: { $in: ["ordered", "preparing"] },
+    });
+
+    const waitMinutes = (queueCount + 1) * prepMinutes;
+
+    const estimatedReadyAt = new Date(Date.now() + waitMinutes * 60 * 1000);
 
     const order = await Order.create({
       customerId: req.user.id,
@@ -131,6 +158,7 @@ export const createOrder = async (req, res) => {
       subtotal,
       deliveryFee: 0,
       total,
+      paymentMethod: resolvedPaymentMethod,
       estimatedReadyAt,
       status: "ordered",
     });

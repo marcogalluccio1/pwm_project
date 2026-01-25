@@ -31,6 +31,7 @@ const OrderSchema = new mongoose.Schema(
     subtotal: { type: Number, required: true, min: 0 },
     deliveryFee: { type: Number, required: true, min: 0 },
     total: { type: Number, required: true, min: 0 },
+    paymentMethod: { type: String, enum: ["card", "prepaid", "cash"], required: true},
 
     estimatedReadyAt: { type: Date },
   },
