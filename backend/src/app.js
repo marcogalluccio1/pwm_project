@@ -8,6 +8,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerOptions from "./swagger.js";
 import { loadMealsFromJson } from "./services/mealSetup.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/restaurants", restaurantRoutes);
 app.use("/api/meals", mealRoutes);
+app.use("/api/orders", orderRoutes);
 
 app.get("/", (req, res) => {
   res.send("FastFood API running");

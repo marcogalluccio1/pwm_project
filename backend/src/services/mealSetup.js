@@ -11,7 +11,7 @@ export async function loadMealsFromJson() {
       return;
     }
 
-    const filePath = path.resolve(process.cwd(), "data", "meals.json");
+    const filePath = path.resolve(process.cwd(), process.env.MEALS_JSON_PATH);
 
     if (!fs.existsSync(filePath)) {
       console.log("Meals JSON not found, skipping seed.");

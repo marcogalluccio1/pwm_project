@@ -16,6 +16,7 @@ import {
 import { requireAuth, requireRole } from "../middleware/authMiddleware.js";
 import { setMyMenu } from "../controllers/menuController.js";
 import { getRestaurantMenu, getMyRestaurantMenu } from "../controllers/menuController.js";
+import { getMyRestaurantStats } from "../controllers/statsController.js";
 
 const router = express.Router();
 
@@ -143,6 +144,23 @@ router.delete("/mine", requireAuth, requireRole("seller"), deleteMyRestaurant);
  *       404: { description: Restaurant not found }
  */
 router.get("/mine/menu", requireAuth, requireRole("seller"), getMyRestaurantMenu);
+
+/**
+ * @swagger
+ * /api/restaurants/mine/stats:
+ *   get:
+ *     tags: [Restaurants]
+ *     summary: Get my restaurant statistics (seller only)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200: { description: OK (stats) }
+ *       401: { description: Missing or invalid token }
+ *       403: { description: Forbidden (not seller) }
+ *       404: { description: Restaurant not found }
+ */
+router.get("/mine/stats", requireAuth, requireRole("seller"), getMyRestaurantStats);
+
 
 /**
 * @swagger

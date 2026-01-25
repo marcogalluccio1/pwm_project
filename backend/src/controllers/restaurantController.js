@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Restaurant from "../models/Restaurant.js";
+import Order from "../models/Order.js";
 
 export const getRestaurants = async (req, res) => {
   try {
@@ -101,12 +102,24 @@ export const deleteMyRestaurant = async (req, res) => {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
+    const hasActiveOrders = await Order.exists({
+      restaurantId: restaurant._id,
+      status: { $ne: "delivered" },
+    });
+
+    if (hasActiveOrders) {
+      return res.status(409).json({
+        message: "You cannot delete the restaurant while it has active orders.",
+      });
+    }
+
     await Restaurant.findByIdAndDelete(restaurant._id);
-    res.status(204).end();
+    return res.status(204).end();
   } catch (err) {
     console.error("DELETE_MY_RESTAURANT_ERROR:", err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 

@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import Restaurant from "../models/Restaurant.js";
+import Order from "../models/Order.js";
 
 function signToken(user) {
   const payload = { sub: user._id.toString(), role: user.role };
@@ -226,12 +228,52 @@ export const deleteMe = async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // NOTE: later you may want to also delete/cleanup related data (restaurant, orders, etc.)
-    await User.findByIdAndDelete(req.user.id);
+    //block customer account deletion if there are active orders
+    if (user.role === "customer") {
+      const hasActiveOrders = await Order.exists({
+        customerId: user._id,
+        status: { $ne: "delivered" },
+      });
 
-    return res.status(204).end();
+      if (hasActiveOrders) {
+        return res.status(409).json({
+          message: "You cannot delete your account while you have active orders.",
+        });
+      }
+
+      await User.findByIdAndDelete(user._id);
+      return res.status(204).end();
+    }
+
+    //block seller account deletion if there are active orders at his restaurant
+    if (user.role === "seller") {
+      const restaurant = await Restaurant.findOne({ sellerId: user._id }).select("_id");
+
+      if (restaurant) {
+        const hasActiveRestaurantOrders = await Order.exists({
+          restaurantId: restaurant._id,
+          status: { $ne: "delivered" },
+        });
+
+        if (hasActiveRestaurantOrders) {
+          return res.status(409).json({
+            message:
+              "You cannot delete your seller account while your restaurant has active orders.",
+          });
+        }
+
+        //delete seller's restaurant
+        await Restaurant.findByIdAndDelete(restaurant._id);
+      }
+
+      //delete seller user
+      await User.findByIdAndDelete(user._id);
+      return res.status(204).end();
+    }
+    return res.status(400).json({ message: "Invalid role" });
   } catch (err) {
     console.error("DELETE_ME_ERROR:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
+
