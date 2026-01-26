@@ -81,7 +81,7 @@ router.get("/me", requireAuth, me);
 *   put:
 *     tags: [Auth]
 *     summary: Update authenticated user profile
-*     description: If payment method is card or prepaid, cardBrand/cardLast4/holderName are required.
+*     description: If payment method is card or prepaid, cardBrand/cardLast4/holderName are required. Changing password requires to give old password
 *     security:
 *       - bearerAuth: []
 *     requestBody:
@@ -96,6 +96,7 @@ router.get("/me", requireAuth, me);
 *               lastName: { type: string }
 *               vatNumber: { type: string }
 *               password: { type: string }
+*               oldPassword: { type: string }
 *               payment:
 *                 type: object
 *                 properties:

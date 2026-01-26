@@ -1,0 +1,88 @@
+.auth {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px 18px;
+}
+
+.me__card {
+  padding: 18px;
+}
+
+.me__title {
+  text-align: center;
+  margin: 4px 0 0;
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.me__subtitle {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.me__grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.me__panel {
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.me__panelTitle {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.me__text {
+  margin: 6px 0;
+  opacity: 0.9;
+}
+
+.me__actions {
+  display: grid;
+  gap: 10px;
+}
+
+@media (max-width: 800px) {
+  .me__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.me__form { margin-top: 10px; display: grid; gap: 12px; }
+.me__label { display: grid; gap: 6px; font-weight: 800; }
+.me__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 800px) { .me__row { grid-template-columns: 1fr; } }
+
+.me__divider { height: 1px; margin: 14px 0; background: rgba(255,255,255,0.10); }
+
+.me__checkbox { display: flex; gap: 10px; align-items: center; font-weight: 800; color: var(--muted); }
+.me__checkbox input { width: 18px; height: 18px; }
+
+.me__actionsRow { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.me__dangerBtn {
+  background: rgba(255, 59, 59, 0.12);
+  border: 1px solid rgba(255, 59, 59, 0.35);
+  color: #fff;
+}
+
+.me__dangerBox {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 59, 59, 0.35);
+  background: rgba(255, 59, 59, 0.10);
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.me__dangerActions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+
+.me__dangerConfirm { background: rgba(255, 59, 59, 0.9); color: #111; font-weight: 900; }

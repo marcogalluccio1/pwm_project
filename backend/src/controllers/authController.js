@@ -113,7 +113,7 @@ export const login = async (req, res) => {
 
 export const updateMe = async (req, res) => {
   try {
-    const { email, firstName, lastName, vatNumber, password } = req.body;
+    const { email, firstName, lastName, vatNumber, password, oldPassword } = req.body;
 
     const user = await User.findById(req.user.id).select("+passwordHash");
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -210,6 +210,16 @@ export const updateMe = async (req, res) => {
       if (typeof password !== "string" || password.length < 8) {
         return res.status(400).json({ message: "Password must be at least 8 characters long" });
       }
+
+      if (!oldPassword || typeof oldPassword !== "string") {
+        return res.status(400).json({ message: "oldPassword is required to change password" });
+      }
+
+      const ok = await user.comparePassword(oldPassword);
+      if (!ok) {
+        return res.status(401).json({ message: "Old password is incorrect" });
+      }
+
       await user.setPassword(password);
     }
 
