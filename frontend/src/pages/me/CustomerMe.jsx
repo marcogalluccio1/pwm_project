@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../../auth/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { updateMeApi, deleteMeApi } from "../../api/auth.api";
 
 export default function CustomerMe() {
   const { user, refreshMe, logout } = useAuth();
+  const navigate = useNavigate();
 
   const initial = useMemo(
     () => ({
@@ -39,9 +40,41 @@ export default function CustomerMe() {
   const [dangerOpen, setDangerOpen] = useState(false);
   const [deleteBusy, setDeleteBusy] = useState(false);
 
+  // input errors (global class: input--error)
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  // success message timer
+  const msgTimerRef = useRef(null);
+
   useEffect(() => {
     setForm(initial);
+    setFieldErrors({});
+    // IMPORTANT: do NOT clear msg/err here (refreshMe would wipe it instantly)
   }, [initial]);
+
+  useEffect(() => {
+    if (!msg) return;
+
+    if (msgTimerRef.current) clearTimeout(msgTimerRef.current);
+
+    msgTimerRef.current = setTimeout(() => {
+      setMsg("");
+      msgTimerRef.current = null;
+    }, 4000);
+
+    return () => {
+      if (msgTimerRef.current) clearTimeout(msgTimerRef.current);
+    };
+  }, [msg]);
+
+  function clearFieldError(key) {
+    setFieldErrors((prev) => {
+      if (!prev?.[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  }
 
   function setField(name, value) {
     setForm((f) => ({ ...f, [name]: value }));
@@ -62,12 +95,13 @@ export default function CustomerMe() {
       lastName: form.lastName.trim(),
     };
 
-    //password change is optional, but if provided we send both fields
     const oldPassword = form.oldPassword.trim();
     const newPassword = form.newPassword.trim();
+
+    // password change is optional, but if provided we send both fields
     if (oldPassword || newPassword) {
       payload.oldPassword = oldPassword;
-      payload.password = newPassword; 
+      payload.password = newPassword;
     }
 
     const favoriteMealTypes = form.preferences.favoriteMealTypes
@@ -92,48 +126,50 @@ export default function CustomerMe() {
     return payload;
   }
 
-  function validate(payload) {
-    if (!payload.email || !payload.firstName || !payload.lastName) {
-      return "Email, nome e cognome sono obbligatori.";
-    }
+  // marks ONLY required/conditional fields
+  function validateAndMark(payload) {
+    const errors = {};
 
-    //password validation 
+    // required
+    if (!payload.email) errors.email = true;
+    if (!payload.firstName) errors.firstName = true;
+    if (!payload.lastName) errors.lastName = true;
+
+    // optional password change: if one is set, both are required
     const hasOld = Boolean(payload.oldPassword);
     const hasNew = Boolean(payload.password);
 
     if (hasOld || hasNew) {
-      if (!hasOld || !hasNew) {
-        return "Per cambiare password devi inserire sia la vecchia che la nuova password.";
-      }
-      if (payload.password.length < 8) {
-        return "La nuova password deve avere almeno 8 caratteri.";
-      }
+      if (!hasOld) errors.oldPassword = true;
+      if (!hasNew) errors.newPassword = true;
+      if (hasNew && payload.password.length < 8) errors.newPassword = true;
     }
 
+    // payment required only for card/prepaid
     const method = payload.payment?.method;
 
     if (method === "card" || method === "prepaid") {
       const { cardBrand, cardLast4, holderName } = payload.payment || {};
-      if (!cardBrand || !holderName || !cardLast4) {
-        return "Per carta/prepagata compila circuito, intestatario e ultime 4 cifre.";
-      }
-      if (!/^\d{4}$/.test(cardLast4)) {
-        return "Le ultime 4 cifre devono essere un numero di 4 cifre (es. 1234).";
-      }
+      if (!cardBrand) errors["payment.cardBrand"] = true;
+      if (!holderName) errors["payment.holderName"] = true;
+      if (!cardLast4) errors["payment.cardLast4"] = true;
+      if (cardLast4 && !/^\d{4}$/.test(cardLast4)) errors["payment.cardLast4"] = true;
     }
 
-    return "";
+    setFieldErrors(errors);
+    return Object.keys(errors).length > 0;
   }
 
   async function handleSave(e) {
     e.preventDefault();
-    setMsg("");
     setErr("");
+    setMsg("");
 
     const payload = buildPayload();
-    const validationError = validate(payload);
-    if (validationError) {
-      setErr(validationError);
+    const hasErrors = validateAndMark(payload);
+
+    if (hasErrors) {
+      setErr("Controlla i campi evidenziati in rosso.");
       return;
     }
 
@@ -144,16 +180,25 @@ export default function CustomerMe() {
 
       setField("oldPassword", "");
       setField("newPassword", "");
+      clearFieldError("oldPassword");
+      clearFieldError("newPassword");
 
       await refreshMe();
     } catch (error) {
       const status = error?.response?.status;
       const message = error?.response?.data?.message;
 
-      if (status === 409) setErr(message || "Email già registrata.");
-      else if (status === 400) setErr(message || "Dati non validi.");
-      else if (status === 401) setErr("Vecchia password errata.");
-      else setErr(message || "Errore durante il salvataggio.");
+      if (status === 409) {
+        setFieldErrors((p) => ({ ...p, email: true }));
+        setErr(message || "Email già registrata.");
+      } else if (status === 400) {
+        setErr(message || "Dati non validi.");
+      } else if (status === 401) {
+        setFieldErrors((p) => ({ ...p, oldPassword: true }));
+        setErr("Vecchia password errata.");
+      } else {
+        setErr(message || "Errore durante il salvataggio.");
+      }
     } finally {
       setIsSaving(false);
     }
@@ -167,6 +212,7 @@ export default function CustomerMe() {
     try {
       await deleteMeApi();
       logout();
+      navigate("/", { replace: true });
     } catch (error) {
       const status = error?.response?.status;
       const message = error?.response?.data?.message;
@@ -182,6 +228,11 @@ export default function CustomerMe() {
 
   const isCardLike = form.payment.method === "card" || form.payment.method === "prepaid";
 
+  const handleLogout = () => {
+    logout();
+    navigate("/", { replace: true });
+  };
+
   return (
     <div className="card me__card">
       <h1 className="me__title">Profilo cliente</h1>
@@ -193,7 +244,7 @@ export default function CustomerMe() {
         </div>
       )}
       {msg && (
-        <div className="alert" style={{ marginTop: 12 }}>
+        <div className="alert alert--success" style={{ marginTop: 12 }}>
           {msg}
         </div>
       )}
@@ -202,13 +253,16 @@ export default function CustomerMe() {
         <div className="card me__panel card--flat">
           <h3 className="me__panelTitle">Informazioni personali</h3>
 
-          <form className="me__form" onSubmit={handleSave}>
+          <form className="me__form" onSubmit={handleSave} noValidate>
             <label className="me__label">
               Email
               <input
-                className="input"
+                className={`input ${fieldErrors.email ? "input--error" : ""}`}
                 value={form.email}
-                onChange={(e) => setField("email", e.target.value)}
+                onChange={(e) => {
+                  setField("email", e.target.value);
+                  clearFieldError("email");
+                }}
                 autoComplete="email"
               />
             </label>
@@ -217,9 +271,12 @@ export default function CustomerMe() {
               <label className="me__label">
                 Nome
                 <input
-                  className="input"
+                  className={`input ${fieldErrors.firstName ? "input--error" : ""}`}
                   value={form.firstName}
-                  onChange={(e) => setField("firstName", e.target.value)}
+                  onChange={(e) => {
+                    setField("firstName", e.target.value);
+                    clearFieldError("firstName");
+                  }}
                   autoComplete="given-name"
                 />
               </label>
@@ -227,9 +284,12 @@ export default function CustomerMe() {
               <label className="me__label">
                 Cognome
                 <input
-                  className="input"
+                  className={`input ${fieldErrors.lastName ? "input--error" : ""}`}
                   value={form.lastName}
-                  onChange={(e) => setField("lastName", e.target.value)}
+                  onChange={(e) => {
+                    setField("lastName", e.target.value);
+                    clearFieldError("lastName");
+                  }}
                   autoComplete="family-name"
                 />
               </label>
@@ -238,10 +298,13 @@ export default function CustomerMe() {
             <label className="me__label">
               Vecchia password (per cambiare password)
               <input
-                className="input"
+                className={`input ${fieldErrors.oldPassword ? "input--error" : ""}`}
                 type="password"
                 value={form.oldPassword}
-                onChange={(e) => setField("oldPassword", e.target.value)}
+                onChange={(e) => {
+                  setField("oldPassword", e.target.value);
+                  clearFieldError("oldPassword");
+                }}
                 autoComplete="current-password"
               />
             </label>
@@ -249,10 +312,13 @@ export default function CustomerMe() {
             <label className="me__label">
               Nuova password
               <input
-                className="input"
+                className={`input ${fieldErrors.newPassword ? "input--error" : ""}`}
                 type="password"
                 value={form.newPassword}
-                onChange={(e) => setField("newPassword", e.target.value)}
+                onChange={(e) => {
+                  setField("newPassword", e.target.value);
+                  clearFieldError("newPassword");
+                }}
                 placeholder="Min 8 caratteri"
                 autoComplete="new-password"
               />
@@ -261,9 +327,9 @@ export default function CustomerMe() {
             <button className="btn btn--primary" type="submit" disabled={isSaving}>
               {isSaving ? "Salvataggio..." : "Salva modifiche"}
             </button>
-            
+
             <Link to="/" className="btn btn--ghost">
-                Torna alla Home
+              Torna alla Home
             </Link>
           </form>
         </div>
@@ -299,15 +365,37 @@ export default function CustomerMe() {
 
             <label className="me__label">
               Metodo
-              <select
-                className="input"
-                value={form.payment.method}
-                onChange={(e) => setPaymentField("method", e.target.value)}
-              >
-                <option value="card">Carta</option>
-                <option value="prepaid">Prepagata</option>
-                <option value="cash">Contanti</option>
-              </select>
+              <div className="me__segmented" role="radiogroup" aria-label="Payment method">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={form.payment.method === "card"}
+                  className={`me__segBtn ${form.payment.method === "card" ? "is-active" : ""}`}
+                  onClick={() => setPaymentField("method", "card")}
+                >
+                  Carta
+                </button>
+
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={form.payment.method === "prepaid"}
+                  className={`me__segBtn ${form.payment.method === "prepaid" ? "is-active" : ""}`}
+                  onClick={() => setPaymentField("method", "prepaid")}
+                >
+                  Prepagata
+                </button>
+
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={form.payment.method === "cash"}
+                  className={`me__segBtn ${form.payment.method === "cash" ? "is-active" : ""}`}
+                  onClick={() => setPaymentField("method", "cash")}
+                >
+                  Contanti
+                </button>
+              </div>
             </label>
 
             {isCardLike && (
@@ -316,9 +404,12 @@ export default function CustomerMe() {
                   <label className="me__label">
                     Circuito
                     <input
-                      className="input"
+                      className={`input ${fieldErrors["payment.cardBrand"] ? "input--error" : ""}`}
                       value={form.payment.cardBrand}
-                      onChange={(e) => setPaymentField("cardBrand", e.target.value)}
+                      onChange={(e) => {
+                        setPaymentField("cardBrand", e.target.value);
+                        clearFieldError("payment.cardBrand");
+                      }}
                       placeholder="Visa, MasterCard..."
                     />
                   </label>
@@ -326,9 +417,12 @@ export default function CustomerMe() {
                   <label className="me__label">
                     Ultime 4 cifre
                     <input
-                      className="input"
+                      className={`input ${fieldErrors["payment.cardLast4"] ? "input--error" : ""}`}
                       value={form.payment.cardLast4}
-                      onChange={(e) => setPaymentField("cardLast4", e.target.value)}
+                      onChange={(e) => {
+                        setPaymentField("cardLast4", e.target.value);
+                        clearFieldError("payment.cardLast4");
+                      }}
                       placeholder="1234"
                       inputMode="numeric"
                       maxLength={4}
@@ -339,24 +433,30 @@ export default function CustomerMe() {
                 <label className="me__label">
                   Intestatario
                   <input
-                    className="input"
-                      value={form.payment.holderName}
-                      onChange={(e) => setPaymentField("holderName", e.target.value)}
-                      placeholder="Nome Cognome"
-                    />
-                  </label>
-                </>
-              )}
-            </div>
+                    className={`input ${fieldErrors["payment.holderName"] ? "input--error" : ""}`}
+                    value={form.payment.holderName}
+                    onChange={(e) => {
+                      setPaymentField("holderName", e.target.value);
+                      clearFieldError("payment.holderName");
+                    }}
+                    placeholder="Nome Cognome"
+                  />
+                </label>
+              </>
+            )}
 
             <div className="me__divider" />
 
             <div className="me__actionsRow">
-              <button className="btn btn--ghost" type="button" onClick={logout}>
+              <button className="btn btn--ghost" type="button" onClick={handleLogout}>
                 Logout
               </button>
 
-              <button className="btn me__dangerBtn" type="button" onClick={() => setDangerOpen((v) => !v)}>
+              <button
+                className="btn me__dangerBtn"
+                type="button"
+                onClick={() => setDangerOpen((v) => !v)}
+              >
                 Elimina account
               </button>
             </div>
@@ -368,7 +468,11 @@ export default function CustomerMe() {
                 </p>
 
                 <div className="me__dangerActions">
-                  <button className="btn btn--secondary" type="button" onClick={() => setDangerOpen(false)}>
+                  <button
+                    className="btn btn--secondary"
+                    type="button"
+                    onClick={() => setDangerOpen(false)}
+                  >
                     Annulla
                   </button>
                   <button
@@ -385,5 +489,6 @@ export default function CustomerMe() {
           </div>
         </div>
       </div>
+    </div>
   );
 }

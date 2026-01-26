@@ -1,3 +1,31 @@
+.auth__brand {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.auth__mark {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 188, 13, 0.95),
+    rgba(255, 140, 0, 0.45)
+  );
+}
+
+.auth__brandText {
+  font-weight: 900;
+  font-size: 46px;
+  letter-spacing: 0.3px;
+}
+
+.auth__brandText span {
+  color: var(--accent);
+}
+
 .auth {
   min-height: 100vh;
   display: grid;
@@ -47,4 +75,33 @@
 
 .auth__footer a:hover {
   text-decoration: underline;
+}
+
+.auth__divider {
+  position: relative;
+  text-align: center;
+  margin: 18px 0 6px;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.auth__divider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.auth__divider span {
+  position: relative;
+}
+
+.auth__logo {
+  height: clamp(56px, 8vw, 128px);
+  width: auto;
+  display: block;
 }

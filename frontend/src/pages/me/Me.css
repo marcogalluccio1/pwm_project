@@ -86,3 +86,37 @@
 .me__dangerActions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
 
 .me__dangerConfirm { background: rgba(255, 59, 59, 0.9); color: #111; font-weight: 900; }
+
+.me__segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.me__segBtn {
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease, border-color 0.12s ease;
+}
+
+.me__segBtn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  border-color: rgba(255, 188, 13, 0.25);
+}
+
+.me__segBtn.is-active {
+  background: rgba(255, 188, 13, 0.18);
+  border-color: rgba(255, 188, 13, 0.55);
+  box-shadow: 0 0 0 3px rgba(255, 188, 13, 0.12);
+}
+
+.me__segBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 188, 13, 0.22);
+}
