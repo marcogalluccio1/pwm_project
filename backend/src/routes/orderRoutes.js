@@ -45,7 +45,7 @@ const router = express.Router();
  *                     quantity: { type: number }
  *     responses:
  *       201: { description: Created }
- *       400: { description: Invalid input }
+ *       400: { description: Invalid input or payment method not set }
  *       401: { description: Missing/invalid token }
  *       403: { description: Forbidden }
  */

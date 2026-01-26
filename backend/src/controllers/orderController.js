@@ -79,12 +79,9 @@ export const createOrder = async (req, res) => {
 
     if (!resolvedPaymentMethod) {
       return res.status(400).json({
+        code: "PAYMENT_METHOD_MISSING",
         message: "Payment method is required to place an order. Set it in your profile."
       });
-    }
-
-    if (!["card", "prepaid", "cash"].includes(resolvedPaymentMethod)) {
-      return res.status(400).json({ message: "Invalid payment method" });
     }
 
     //items validation
@@ -300,30 +297,5 @@ export const updateOrderStatus = async (req, res) => {
 export const confirmDelivered = async (req, res) => {
   return res.status(400).json({ message: "Delivery is currently disabled." });
   
-  try {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-
-    const order = await Order.findById(id);
-    if (!order) return res.status(404).json({ message: "Order not found" });
-
-    if (String(order.customerId) !== String(req.user.id)) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
-
-    if (order.status !== "delivering") {
-      return res.status(400).json({ message: "Order is not delivering" });
-    }
-
-    order.status = "delivered";
-    await order.save();
-
-    return res.json({ order });
-  } catch (err) {
-    console.error("CONFIRM_DELIVERED_ERROR:", err);
-    return res.status(500).json({ message: "Server error" });
-  }
+  //delivery is not implemented yet
 };
