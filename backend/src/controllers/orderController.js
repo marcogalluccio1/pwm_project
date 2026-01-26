@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Order from "../models/Order.js";
 import Restaurant from "../models/Restaurant.js";
 import Meal from "../models/Meal.js";
-const User = require("../models/User");
+import User from "../models/User.js";
 
 function toNumberEnv(key, fallback) {
   const n = Number(process.env[key]);
