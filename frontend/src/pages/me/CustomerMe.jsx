@@ -13,7 +13,6 @@ export default function CustomerMe() {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
 
-      // password change fields
       oldPassword: "",
       newPassword: "",
 
@@ -40,16 +39,12 @@ export default function CustomerMe() {
   const [dangerOpen, setDangerOpen] = useState(false);
   const [deleteBusy, setDeleteBusy] = useState(false);
 
-  // input errors (global class: input--error)
   const [fieldErrors, setFieldErrors] = useState({});
-
-  // success message timer
   const msgTimerRef = useRef(null);
 
   useEffect(() => {
     setForm(initial);
     setFieldErrors({});
-    // IMPORTANT: do NOT clear msg/err here (refreshMe would wipe it instantly)
   }, [initial]);
 
   useEffect(() => {
@@ -98,7 +93,6 @@ export default function CustomerMe() {
     const oldPassword = form.oldPassword.trim();
     const newPassword = form.newPassword.trim();
 
-    // password change is optional, but if provided we send both fields
     if (oldPassword || newPassword) {
       payload.oldPassword = oldPassword;
       payload.password = newPassword;
@@ -126,16 +120,13 @@ export default function CustomerMe() {
     return payload;
   }
 
-  // marks ONLY required/conditional fields
   function validateAndMark(payload) {
     const errors = {};
 
-    // required
     if (!payload.email) errors.email = true;
     if (!payload.firstName) errors.firstName = true;
     if (!payload.lastName) errors.lastName = true;
 
-    // optional password change: if one is set, both are required
     const hasOld = Boolean(payload.oldPassword);
     const hasNew = Boolean(payload.password);
 
@@ -145,7 +136,6 @@ export default function CustomerMe() {
       if (hasNew && payload.password.length < 8) errors.newPassword = true;
     }
 
-    // payment required only for card/prepaid
     const method = payload.payment?.method;
 
     if (method === "card" || method === "prepaid") {
@@ -226,12 +216,12 @@ export default function CustomerMe() {
     }
   }
 
-  const isCardLike = form.payment.method === "card" || form.payment.method === "prepaid";
-
   const handleLogout = () => {
     logout();
     navigate("/", { replace: true });
   };
+
+  const isCardLike = form.payment.method === "card" || form.payment.method === "prepaid";
 
   return (
     <div className="card me__card">
@@ -399,7 +389,7 @@ export default function CustomerMe() {
             </label>
 
             {isCardLike && (
-              <>
+              <div className="me__paymentFields me__paymentFields--enter">
                 <div className="me__row">
                   <label className="me__label">
                     Circuito
@@ -442,7 +432,7 @@ export default function CustomerMe() {
                     placeholder="Nome Cognome"
                   />
                 </label>
-              </>
+              </div>
             )}
 
             <div className="me__divider" />
@@ -452,11 +442,7 @@ export default function CustomerMe() {
                 Logout
               </button>
 
-              <button
-                className="btn me__dangerBtn"
-                type="button"
-                onClick={() => setDangerOpen((v) => !v)}
-              >
+              <button className="btn me__dangerBtn" type="button" onClick={() => setDangerOpen((v) => !v)}>
                 Elimina account
               </button>
             </div>
@@ -468,11 +454,7 @@ export default function CustomerMe() {
                 </p>
 
                 <div className="me__dangerActions">
-                  <button
-                    className="btn btn--secondary"
-                    type="button"
-                    onClick={() => setDangerOpen(false)}
-                  >
+                  <button className="btn btn--secondary" type="button" onClick={() => setDangerOpen(false)}>
                     Annulla
                   </button>
                   <button

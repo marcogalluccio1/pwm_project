@@ -1,25 +1,15 @@
 .auth__brand {
   display: grid;
   place-items: center;
-  gap: 10px;
+  gap: 0px;
   margin-bottom: 10px;
-}
-
-.auth__mark {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(255, 188, 13, 0.95),
-    rgba(255, 140, 0, 0.45)
-  );
 }
 
 .auth__brandText {
   font-weight: 900;
-  font-size: 46px;
+  font-size: 40px;
   letter-spacing: 0.3px;
+  margin-top: -18px;
 }
 
 .auth__brandText span {
@@ -41,7 +31,7 @@
 
 .auth__title {
   margin: 6px 0 0;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 900;
 }
 
@@ -101,7 +91,37 @@
 }
 
 .auth__logo {
-  height: clamp(56px, 8vw, 128px);
+  height: clamp(56px, 8vw, 100px);
   width: auto;
   display: block;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth__step--forward {
+  animation: fadeSlideUp 300ms ease-out;
+}
+
+.auth__step--back {
+  animation: fadeSlideDown 300ms ease-out;
 }

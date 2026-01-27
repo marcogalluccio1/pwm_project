@@ -3,12 +3,9 @@ import { useAuth } from "./auth/useAuth";
 
 import Home from "./pages/public/Home";
 import Login from "./pages/public/Login";
+import Register from "./pages/public/Register";
 import Me from "./pages/me/Me";
 import Restaurants from "./pages/public/Restaurants";
-
-function Register() {
-  return <h1>Register</h1>;
-}
 
 export default function App() {
   const { isLoading } = useAuth();
