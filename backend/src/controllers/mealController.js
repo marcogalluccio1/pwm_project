@@ -53,7 +53,7 @@ export const getMealById = async (req, res) => {
 
 export const createCustomMeal = async (req, res) => {
   try {
-    const { name, category, thumbnailUrl, ingredients, measures} = req.body;
+    const { name, category, thumbnailUrl, ingredients} = req.body;
 
     if (!name || !category || !thumbnailUrl) {
       return res.status(400).json({ message: "name, category, thumbnailUrl are required" });
@@ -64,7 +64,6 @@ export const createCustomMeal = async (req, res) => {
       category,
       thumbnailUrl,
       ingredients: Array.isArray(ingredients) ? ingredients : [],
-      measures: Array.isArray(measures) ? measures : [],
       isGlobal: false,
       createdBySellerId: req.user.id,
     });
@@ -94,7 +93,7 @@ export const updateCustomMeal = async (req, res) => {
       return res.status(404).json({ message: "Meal not found" });
     }
 
-    const { name, category, thumbnailUrl, ingredients, measures } = req.body;
+    const { name, category, thumbnailUrl, ingredients } = req.body;
 
     if (!name || !category || !thumbnailUrl || !Array.isArray(ingredients)) {
       return res.status(400).json({ message: "Missing or invalid fields" });
@@ -104,7 +103,6 @@ export const updateCustomMeal = async (req, res) => {
     meal.category = category;
     meal.thumbnailUrl = thumbnailUrl;
     meal.ingredients = ingredients;
-    meal.measures = Array.isArray(measures) ? measures : [];
 
     await meal.save();
     return res.json(meal);

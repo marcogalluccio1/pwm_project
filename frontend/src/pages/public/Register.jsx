@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
-import "./Auth.css";
+import "../../styles/auth.css";
 import logo from "/src/assets/logo.png";
 import { LuUser, LuStore } from "react-icons/lu";
 

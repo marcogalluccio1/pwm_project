@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../../auth/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import { updateMeApi, deleteMeApi } from "../../api/auth.api";
-import { LuPencil, LuX } from "react-icons/lu";
+import { LuPencil, LuX, LuCreditCard, LuWallet, LuBanknote } from "react-icons/lu";
 
 export default function CustomerMe() {
   const { user, refreshMe, logout } = useAuth();
@@ -376,6 +376,7 @@ export default function CustomerMe() {
                     className={`me__segBtn ${form.payment.method === "card" ? "is-active" : ""}`}
                     onClick={() => setPaymentField("method", "card")}
                   >
+                    <LuCreditCard aria-hidden />
                     Carta
                   </button>
 
@@ -386,6 +387,7 @@ export default function CustomerMe() {
                     className={`me__segBtn ${form.payment.method === "prepaid" ? "is-active" : ""}`}
                     onClick={() => setPaymentField("method", "prepaid")}
                   >
+                    <LuWallet aria-hidden />
                     Prepagata
                   </button>
 
@@ -396,6 +398,7 @@ export default function CustomerMe() {
                     className={`me__segBtn ${form.payment.method === "cash" ? "is-active" : ""}`}
                     onClick={() => setPaymentField("method", "cash")}
                   >
+                    <LuBanknote aria-hidden />
                     Contanti
                   </button>
                 </div>

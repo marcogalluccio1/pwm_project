@@ -32,7 +32,6 @@ export async function loadMealsFromJson() {
       category: m.strCategory,
       thumbnailUrl: m.strMealThumb,
       ingredients: Array.isArray(m.ingredients) ? m.ingredients.filter(Boolean) : [],
-      measures: Array.isArray(m.measures) ? m.measures.filter(Boolean) : [],
       isGlobal: true,
     }));
 

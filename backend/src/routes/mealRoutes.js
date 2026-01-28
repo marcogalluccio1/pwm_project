@@ -107,9 +107,6 @@ router.get("/:id", getMealById);
 *               ingredients:
 *                 type: array
 *                 items: { type: string }
-*               measures:
-*                 type: array
-*                 items: { type: string }
 *     responses:
 *       201: { description: Created (custom meal created) }
 *       400: { description: Invalid input data }

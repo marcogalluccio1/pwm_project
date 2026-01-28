@@ -5,6 +5,9 @@ import Home from "./pages/public/Home";
 import Login from "./pages/public/Login";
 import Register from "./pages/public/Register";
 import Me from "./pages/me/Me";
+import CreateRestaurant from "./pages/seller/CreateRestaurant";
+import RestaurantManagement from "./pages/seller/RestaurantManagement";
+import RestaurantMenu from "./pages/seller/RestaurantMenu";
 import Restaurants from "./pages/public/Restaurants";
 
 export default function App() {
@@ -18,6 +21,9 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/me" element={<Me />} />
+      <Route path="/seller/restaurant/create" element={<CreateRestaurant />} />
+      <Route path="/seller/restaurant" element={<RestaurantManagement />} />
+      <Route path="/seller/restaurant/menu" element={<RestaurantMenu />} />
       <Route path="/restaurants" element={<Restaurants />} />
       <Route path="*" element={<h1>404</h1>} />
     </Routes>

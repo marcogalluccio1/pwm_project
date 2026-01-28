@@ -1,10 +1,10 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
-import CustomerMe from "./CustomerMe";
-import SellerMe from "./SellerMe";
+import CustomerMe from "./CustomerManagement";
+import SellerMe from "./SellerManagement";
 import TopBar from "../../components/TopBar";
-import "./Me.css";
+import "../../styles/management.css";
 
 export default function Me() {
   const { user } = useAuth();

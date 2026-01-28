@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
-import "./Auth.css";
+import "../../styles/auth.css";
 import logo from "/src/assets/logo.png";
 
 export default function Login() {
