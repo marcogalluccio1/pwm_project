@@ -1,193 +1,369 @@
-import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { LuStore, LuPencil, LuX } from "react-icons/lu";
 import { useAuth } from "../../auth/useAuth";
+import { updateMeApi, deleteMeApi } from "../../api/auth.api";
+import { getMyRestaurantApi } from "../../api/restaurants.api";
 
 export default function SellerMe() {
-  const { user, logout } = useAuth();
+  const { user, refreshMe, logout } = useAuth();
+  const navigate = useNavigate();
 
   const initial = useMemo(
     () => ({
-      name: user?.name || user?.fullName || "",
       email: user?.email || "",
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      vatNumber: user?.vatNumber || "",
+      oldPassword: "",
+      newPassword: "",
     }),
     [user]
   );
 
-  const [profile, setProfile] = useState(initial);
-  const [pw, setPw] = useState({ currentPassword: "", newPassword: "" });
+  const [form, setForm] = useState(initial);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
+
+  const [restaurant, setRestaurant] = useState(null);
+  const [loadingRestaurant, setLoadingRestaurant] = useState(true);
 
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+
   const [dangerOpen, setDangerOpen] = useState(false);
+  const [deleteBusy, setDeleteBusy] = useState(false);
 
-  function onChangeProfile(e) {
-    setProfile((p) => ({ ...p, [e.target.name]: e.target.value }));
-  }
+  const [isEditing, setIsEditing] = useState(false);
 
-  function onChangePw(e) {
-    setPw((p) => ({ ...p, [e.target.name]: e.target.value }));
-  }
+  const msgTimer = useRef(null);
 
-  async function handleSaveProfile(e) {
-    e.preventDefault();
-    setMsg("");
-    setErr("");
-    try {
-      // TODO: PATCH /api/users/me
-      setMsg("Dati aggiornati (stub).");
-    } catch {
-      setErr("Errore durante l'aggiornamento.");
+  useEffect(() => {
+    setForm(initial);
+    setFieldErrors({});
+    setIsEditing(false);
+  }, [initial]);
+
+  useEffect(() => {
+    async function loadRestaurant() {
+      try {
+        const data = await getMyRestaurantApi();
+        setRestaurant(data || null);
+      } catch {
+        setRestaurant(null);
+      } finally {
+        setLoadingRestaurant(false);
+      }
     }
+    loadRestaurant();
+  }, []);
+
+  useEffect(() => {
+    if (!msg) return;
+    if (msgTimer.current) clearTimeout(msgTimer.current);
+    msgTimer.current = setTimeout(() => setMsg(""), 4000);
+  }, [msg]);
+
+  function clearFieldError(key) {
+    setFieldErrors((prev) => {
+      if (!prev?.[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
   }
 
-  async function handleChangePassword(e) {
-    e.preventDefault();
-    setMsg("");
-    setErr("");
+  function setField(name, value) {
+    setForm((f) => ({ ...f, [name]: value }));
+  }
 
-    if (!pw.currentPassword || !pw.newPassword) {
-      setErr("Inserisci password attuale e nuova password.");
+  function validate(payload) {
+    const errors = {};
+    if (!payload.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) errors.email = true;
+    if (!payload.firstName) errors.firstName = true;
+    if (!payload.lastName) errors.lastName = true;
+    if (!payload.vatNumber) errors.vatNumber = true;
+
+    if (payload.oldPassword || payload.password) {
+      if (!payload.oldPassword) errors.oldPassword = true;
+      if (!payload.password || payload.password.length < 8) errors.newPassword = true;
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length > 0;
+  }
+
+  async function handleSave(e) {
+    e.preventDefault();
+    setErr("");
+    setMsg("");
+
+    const payload = {
+      email: form.email.trim().toLowerCase(),
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      vatNumber: form.vatNumber.trim(),
+    };
+
+    if (form.oldPassword || form.newPassword) {
+      payload.oldPassword = form.oldPassword;
+      payload.password = form.newPassword;
+    }
+
+    if (validate(payload)) {
+      setErr("Controlla i campi evidenziati in rosso.");
       return;
     }
 
+    setIsSaving(true);
     try {
-      // TODO: PATCH /api/users/me/password
-      setPw({ currentPassword: "", newPassword: "" });
-      setMsg("Password aggiornata (stub).");
-    } catch {
-      setErr("Errore durante il cambio password.");
+      await updateMeApi(payload);
+      setMsg("Profilo aggiornato.");
+      setForm((f) => ({ ...f, oldPassword: "", newPassword: "" }));
+      await refreshMe();
+      setIsEditing(false);
+    } catch (e2) {
+      setErr(e2?.response?.data?.message || "Errore durante il salvataggio.");
+    } finally {
+      setIsSaving(false);
     }
   }
 
-  async function handleDeleteAccount() {
-    setMsg("");
-    setErr("");
-
+  async function handleDelete() {
+    setDeleteBusy(true);
     try {
-      // TODO: DELETE /api/users/me
+      await deleteMeApi();
       logout();
-    } catch {
-      setErr("Errore durante l'eliminazione account.");
+      navigate("/", { replace: true });
+    } catch (e) {
+      setErr(e?.response?.data?.message || "Impossibile eliminare l'account.");
+    } finally {
+      setDeleteBusy(false);
+      setDangerOpen(false);
     }
   }
 
-  const restaurantName = user?.restaurantName || user?.restaurant?.name || "Il mio ristorante";
+  function handleCancelEdit() {
+    setForm(initial);
+    setFieldErrors({});
+    setIsEditing(false);
+    setErr("");
+    setMsg("");
+  }
 
   return (
-    <div className="card me__card">
-      <h1 className="me__title">Profilo</h1>
-      <p className="me__subtitle">Seller</p>
+    <div className="card me__panel card--flat">
+      <h1 className="me__title">Profilo ristoratore</h1>
+      <p className="me__subtitle">Gestisci il tuo account e il tuo ristorante</p>
 
-      {err && <div className="alert alert--error" style={{ marginTop: 12 }}>{err}</div>}
-      {msg && <div className="alert" style={{ marginTop: 12 }}>{msg}</div>}
+      {err && <div className="alert alert--error">{err}</div>}
+      {msg && <div className="alert alert--success">{msg}</div>}
 
       <div className="me__grid">
-        <div className="card me__panel card--flat">
-          <h3 className="me__panelTitle">I tuoi dati</h3>
+        <div className="me__colLeft">
+          <div className="card me__panel card--flat">
+            <div className="me__panelHeader">
+              <h3 className="me__panelTitle">Dati personali</h3>
 
-          <form className="me__form" onSubmit={handleSaveProfile}>
-            <label className="me__label">
-              Nome
-              <input className="input" name="name" value={profile.name} onChange={onChangeProfile} />
-            </label>
+              <button
+                type="button"
+                className={`me__editBtn ${isEditing ? "is-active" : ""}`}
+                onClick={() => {
+                  if (isEditing) {
+                    handleCancelEdit();
+                    return;
+                  }
+                  setErr("");
+                  setMsg("");
+                  setIsEditing(true);
+                }}
+                aria-label={isEditing ? "Annulla modifica" : "Modifica dati personali"}
+                title={isEditing ? "Annulla" : "Modifica"}
+              >
+                <LuPencil aria-hidden />
+              </button>
+            </div>
 
-            <label className="me__label">
-              Email
-              <input className="input" name="email" value={profile.email} onChange={onChangeProfile} />
-            </label>
+            <div className="me__panelDivider" />
 
-            <button className="btn btn--primary" type="submit">
-              Salva modifiche
-            </button>
-          </form>
-        </div>
-
-        <div className="card me__panel card--flat">
-          <h3 className="me__panelTitle">Area ristorante</h3>
-          <p className="me__text" style={{ marginTop: 0 }}>
-            <strong>{restaurantName}</strong>
-          </p>
-          <p className="me__text">
-            Gestisci menu, disponibilità, ordini e statistiche.
-          </p>
-
-          <div className="me__actionsRow">
-            <Link to="/seller/restaurant" className="btn btn--secondary">
-              Vai alla gestione
-            </Link>
-            <Link to="/restaurants" className="btn btn--ghost">
-              Vedi pagina pubblica
-            </Link>
-          </div>
-        </div>
-
-        <div className="card me__panel card--flat">
-          <h3 className="me__panelTitle">Sicurezza</h3>
-
-          <form className="me__form" onSubmit={handleChangePassword}>
-            <label className="me__label">
-              Password attuale
-              <input
-                className="input"
-                type="password"
-                name="currentPassword"
-                value={pw.currentPassword}
-                onChange={onChangePw}
-                autoComplete="current-password"
-              />
-            </label>
-
-            <label className="me__label">
-              Nuova password
-              <input
-                className="input"
-                type="password"
-                name="newPassword"
-                value={pw.newPassword}
-                onChange={onChangePw}
-                autoComplete="new-password"
-              />
-            </label>
-
-            <button className="btn btn--secondary" type="submit">
-              Cambia password
-            </button>
-          </form>
-
-          <div className="me__divider" />
-
-          <div className="me__danger">
-            <button className="btn btn--ghost" type="button" onClick={logout}>
-              Logout
-            </button>
-
-            <button
-              className="btn me__dangerBtn"
-              type="button"
-              onClick={() => setDangerOpen((v) => !v)}
+            <form
+              className={`me__form ${!isEditing ? "is-locked" : ""}`}
+              onSubmit={handleSave}
+              noValidate
             >
-              Elimina account
-            </button>
+              <fieldset className="me__fieldset" disabled={!isEditing}>
+                <fieldset className="me__fieldset" disabled={!isEditing}>
+                  <label className="me__label">
+                    Email
+                    <input
+                      className={`input ${fieldErrors.email ? "input--error" : ""}`}
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => {
+                        setField("email", e.target.value);
+                        clearFieldError("email");
+                      }}
+                      autoComplete="email"
+                    />
+                  </label>
 
-            {dangerOpen && (
-              <div className="me__dangerBox">
-                <p style={{ margin: 0, opacity: 0.9 }}>
-                  Questa azione è irreversibile. Vuoi continuare?
-                </p>
-                <div className="me__dangerActions">
-                  <button className="btn btn--secondary" type="button" onClick={() => setDangerOpen(false)}>
+                  <div className="me__row">
+                    <label className="me__label">
+                      Nome
+                      <input
+                        className={`input ${fieldErrors.firstName ? "input--error" : ""}`}
+                        type="text"
+                        value={form.firstName}
+                        onChange={(e) => {
+                          setField("firstName", e.target.value);
+                          clearFieldError("firstName");
+                        }}
+                        autoComplete="given-name"
+                      />
+                    </label>
+
+                    <label className="me__label">
+                      Cognome
+                      <input
+                        className={`input ${fieldErrors.lastName ? "input--error" : ""}`}
+                        type="text"
+                        value={form.lastName}
+                        onChange={(e) => {
+                          setField("lastName", e.target.value);
+                          clearFieldError("lastName");
+                        }}
+                        autoComplete="family-name"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="me__label">
+                    Partita IVA
+                    <input
+                      className={`input ${fieldErrors.vatNumber ? "input--error" : ""}`}
+                      type="text"
+                      value={form.vatNumber}
+                      onChange={(e) => {
+                        setField("vatNumber", e.target.value);
+                        clearFieldError("vatNumber");
+                      }}
+                      autoComplete="off"
+                    />
+                  </label>
+
+                  <label className="me__label">
+                    Vecchia password (per cambiare password)
+                    <input
+                      className={`input ${fieldErrors.oldPassword ? "input--error" : ""}`}
+                      type="password"
+                      value={form.oldPassword}
+                      onChange={(e) => {
+                        setField("oldPassword", e.target.value);
+                        clearFieldError("oldPassword");
+                      }}
+                      autoComplete="current-password"
+                    />
+                  </label>
+
+                  <label className="me__label">
+                    Nuova password
+                    <input
+                      className={`input ${fieldErrors.newPassword ? "input--error" : ""}`}
+                      type="password"
+                      value={form.newPassword}
+                      onChange={(e) => {
+                        setField("newPassword", e.target.value);
+                        clearFieldError("newPassword");
+                      }}
+                      placeholder="Min 8 caratteri"
+                      autoComplete="new-password"
+                    />
+                  </label>
+                </fieldset>
+
+              </fieldset>
+
+              <div className={`me__editActions ${isEditing ? "is-open" : ""}`}>
+                <button className="btn btn--primary" type="submit" disabled={isSaving}>
+                  {isSaving ? "Salvataggio..." : "Salva modifiche"}
+                </button>
+
+                <button className="btn btn--ghost" type="button" onClick={handleCancelEdit}>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                    <LuX aria-hidden />
                     Annulla
-                  </button>
-                  <button className="btn me__dangerConfirm" type="button" onClick={handleDeleteAccount}>
-                    Sì, elimina
-                  </button>
-                </div>
+                  </span>
+                </button>
               </div>
-            )}
+            </form>
           </div>
+
+          <div className="me__footerBar me__footerBar--out">
+            <div className="me__footerLeft">
+              <Link to="/" className="btn btn--ghost">
+                Torna alla Home
+              </Link>
+            </div>
+
+            <div className="me__footerRight">
+              <button
+                className="btn btn--ghost"
+                type="button"
+                onClick={() => {
+                  logout();
+                  navigate("/", { replace: true });
+                }}
+              >
+                Logout
+              </button>
+
+              <button className="btn me__dangerBtn" onClick={() => setDangerOpen(true)} type="button">
+                Elimina account
+              </button>
+            </div>
+          </div>
+
+          {dangerOpen && (
+            <div className="me__dangerBox">
+              <p>Confermi eliminazione account?</p>
+              <div className="me__dangerActions">
+                <button className="btn btn--secondary" onClick={() => setDangerOpen(false)} type="button">
+                  Annulla
+                </button>
+                <button
+                  className="btn me__dangerConfirm"
+                  onClick={handleDelete}
+                  disabled={deleteBusy}
+                  type="button"
+                >
+                  {deleteBusy ? "Eliminazione..." : "Elimina"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
+        <Link
+          to={restaurant ? "/seller/restaurant" : "/seller/restaurant/create"}
+          className="me__restaurantSection"
+          aria-label="Vai al ristorante"
+        >
+          <LuStore className="me__restaurantIconSvg" aria-hidden />
+          <div className="me__restaurantText">
+            <div className="me__restaurantTitle">
+              {loadingRestaurant ? "Caricamento..." : restaurant ? restaurant.name : "Registra il tuo ristorante"}
+            </div>
+            <div className="me__restaurantSubtitle">
+              {loadingRestaurant
+                ? "Recupero informazioni..."
+                : restaurant
+                ? "Gestisci info, menù e ordini"
+                : "Non hai ancora un ristorante associato"}
+            </div>
+          </div>
+        </Link>
       </div>
+
     </div>
   );
 }

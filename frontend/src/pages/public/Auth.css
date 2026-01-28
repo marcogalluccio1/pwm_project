@@ -10,6 +10,14 @@
   font-size: 40px;
   letter-spacing: 0.3px;
   margin-top: -18px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+}
+
+.auth__logo {
+  height: clamp(56px, 8vw, 100px);
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
 }
 
 .auth__brandText span {
@@ -90,12 +98,6 @@
   position: relative;
 }
 
-.auth__logo {
-  height: clamp(56px, 8vw, 100px);
-  width: auto;
-  display: block;
-}
-
 @keyframes fadeSlideUp {
   from {
     opacity: 0;
@@ -124,4 +126,9 @@
 
 .auth__step--back {
   animation: fadeSlideDown 300ms ease-out;
+}
+
+.auth__roleIcon {
+  width: 22px;
+  height: 22px;
 }

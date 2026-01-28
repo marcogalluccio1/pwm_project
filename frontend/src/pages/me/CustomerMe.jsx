@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../../auth/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import { updateMeApi, deleteMeApi } from "../../api/auth.api";
+import { LuPencil, LuX } from "react-icons/lu";
 
 export default function CustomerMe() {
   const { user, refreshMe, logout } = useAuth();
@@ -33,6 +34,7 @@ export default function CustomerMe() {
 
   const [form, setForm] = useState(initial);
   const [isSaving, setIsSaving] = useState(false);
+
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
 
@@ -42,21 +44,22 @@ export default function CustomerMe() {
   const [fieldErrors, setFieldErrors] = useState({});
   const msgTimerRef = useRef(null);
 
+  // edit mode globale (vale per entrambi i pannelli)
+  const [isEditing, setIsEditing] = useState(false);
+
   useEffect(() => {
     setForm(initial);
     setFieldErrors({});
+    setIsEditing(false);
   }, [initial]);
 
   useEffect(() => {
     if (!msg) return;
-
     if (msgTimerRef.current) clearTimeout(msgTimerRef.current);
-
     msgTimerRef.current = setTimeout(() => {
       setMsg("");
       msgTimerRef.current = null;
     }, 4000);
-
     return () => {
       if (msgTimerRef.current) clearTimeout(msgTimerRef.current);
     };
@@ -81,6 +84,24 @@ export default function CustomerMe() {
 
   function setPrefField(name, value) {
     setForm((f) => ({ ...f, preferences: { ...f.preferences, [name]: value } }));
+  }
+
+  function handleCancelEdit() {
+    setForm(initial);
+    setFieldErrors({});
+    setIsEditing(false);
+    setErr("");
+    setMsg("");
+  }
+
+  function handleToggleEdit() {
+    if (isEditing) {
+      handleCancelEdit();
+      return;
+    }
+    setErr("");
+    setMsg("");
+    setIsEditing(true);
   }
 
   function buildPayload() {
@@ -137,7 +158,6 @@ export default function CustomerMe() {
     }
 
     const method = payload.payment?.method;
-
     if (method === "card" || method === "prepaid") {
       const { cardBrand, cardLast4, holderName } = payload.payment || {};
       if (!cardBrand) errors["payment.cardBrand"] = true;
@@ -174,6 +194,7 @@ export default function CustomerMe() {
       clearFieldError("newPassword");
 
       await refreshMe();
+      setIsEditing(false);
     } catch (error) {
       const status = error?.response?.status;
       const message = error?.response?.data?.message;
@@ -224,253 +245,261 @@ export default function CustomerMe() {
   const isCardLike = form.payment.method === "card" || form.payment.method === "prepaid";
 
   return (
-    <div className="card me__card">
+    <div className="card me__panel card--flat">
       <h1 className="me__title">Profilo cliente</h1>
-      <p className="me__subtitle">Modifica i tuoi dati qui sotto</p>
 
-      {err && (
-        <div className="alert alert--error" style={{ marginTop: 12 }}>
-          {err}
-        </div>
-      )}
-      {msg && (
-        <div className="alert alert--success" style={{ marginTop: 12 }}>
-          {msg}
-        </div>
-      )}
+      {err && <div className="alert alert--error" style={{ marginTop: 12 }}>{err}</div>}
+      {msg && <div className="alert alert--success" style={{ marginTop: 12 }}>{msg}</div>}
 
-      <div className="me__grid">
-        <div className="card me__panel card--flat">
-          <h3 className="me__panelTitle">Informazioni personali</h3>
+      <div className="me__panelHeader" >
+        <p className="me__subtitle">Gestisci il tuo account</p>
 
-          <form className="me__form" onSubmit={handleSave} noValidate>
-            <label className="me__label">
-              Email
-              <input
-                className={`input ${fieldErrors.email ? "input--error" : ""}`}
-                value={form.email}
-                onChange={(e) => {
-                  setField("email", e.target.value);
-                  clearFieldError("email");
-                }}
-                autoComplete="email"
-              />
-            </label>
+        <button
+          type="button"
+          className={`me__editBtn ${isEditing ? "is-active" : ""}`}
+          onClick={handleToggleEdit}
+          aria-label={isEditing ? "Annulla modifica" : "Modifica profilo"}
+          title={isEditing ? "Annulla" : "Modifica"}
+        >
+          <LuPencil aria-hidden />
+        </button>
+      </div>
 
-            <div className="me__row">
+      <form className={`me__form ${!isEditing ? "is-locked" : ""}`} onSubmit={handleSave} noValidate>
+        <fieldset className="me__fieldset" disabled={!isEditing}>
+          <div className="me__grid">
+            <div className="card me__panel card--flat">
+              <h3 className="me__panelTitle">Informazioni personali</h3>
+              <div className="me__panelDivider" />
               <label className="me__label">
-                Nome
+                Email
                 <input
-                  className={`input ${fieldErrors.firstName ? "input--error" : ""}`}
-                  value={form.firstName}
+                  className={`input ${fieldErrors.email ? "input--error" : ""}`}
+                  value={form.email}
                   onChange={(e) => {
-                    setField("firstName", e.target.value);
-                    clearFieldError("firstName");
+                    setField("email", e.target.value);
+                    clearFieldError("email");
                   }}
-                  autoComplete="given-name"
+                  autoComplete="email"
                 />
               </label>
 
-              <label className="me__label">
-                Cognome
-                <input
-                  className={`input ${fieldErrors.lastName ? "input--error" : ""}`}
-                  value={form.lastName}
-                  onChange={(e) => {
-                    setField("lastName", e.target.value);
-                    clearFieldError("lastName");
-                  }}
-                  autoComplete="family-name"
-                />
-              </label>
-            </div>
-
-            <label className="me__label">
-              Vecchia password (per cambiare password)
-              <input
-                className={`input ${fieldErrors.oldPassword ? "input--error" : ""}`}
-                type="password"
-                value={form.oldPassword}
-                onChange={(e) => {
-                  setField("oldPassword", e.target.value);
-                  clearFieldError("oldPassword");
-                }}
-                autoComplete="current-password"
-              />
-            </label>
-
-            <label className="me__label">
-              Nuova password
-              <input
-                className={`input ${fieldErrors.newPassword ? "input--error" : ""}`}
-                type="password"
-                value={form.newPassword}
-                onChange={(e) => {
-                  setField("newPassword", e.target.value);
-                  clearFieldError("newPassword");
-                }}
-                placeholder="Min 8 caratteri"
-                autoComplete="new-password"
-              />
-            </label>
-
-            <button className="btn btn--primary" type="submit" disabled={isSaving}>
-              {isSaving ? "Salvataggio..." : "Salva modifiche"}
-            </button>
-
-            <Link to="/" className="btn btn--ghost">
-              Torna alla Home
-            </Link>
-          </form>
-        </div>
-
-        <div className="card me__panel card--flat">
-          <h3 className="me__panelTitle">Preferenze di marketing</h3>
-
-          <div className="me__form">
-            <label className="me__label">
-              Piatti preferiti
-              <input
-                className="input"
-                value={form.preferences.favoriteMealTypes}
-                onChange={(e) => setPrefField("favoriteMealTypes", e.target.value)}
-                placeholder="burger, pizza, salad..."
-              />
-            </label>
-
-            <label className="me__checkbox">
-              <input
-                type="checkbox"
-                checked={form.preferences.marketingOptIn}
-                onChange={(e) => setPrefField("marketingOptIn", e.target.checked)}
-              />
-              <span> Tienimi aggiornato su offerte e promozioni</span>
-            </label>
-
-            <div className="me__divider" />
-
-            <h3 className="me__panelTitle" style={{ marginTop: 0 }}>
-              Metodo di pagamento
-            </h3>
-
-            <label className="me__label">
-              Metodo
-              <div className="me__segmented" role="radiogroup" aria-label="Payment method">
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={form.payment.method === "card"}
-                  className={`me__segBtn ${form.payment.method === "card" ? "is-active" : ""}`}
-                  onClick={() => setPaymentField("method", "card")}
-                >
-                  Carta
-                </button>
-
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={form.payment.method === "prepaid"}
-                  className={`me__segBtn ${form.payment.method === "prepaid" ? "is-active" : ""}`}
-                  onClick={() => setPaymentField("method", "prepaid")}
-                >
-                  Prepagata
-                </button>
-
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={form.payment.method === "cash"}
-                  className={`me__segBtn ${form.payment.method === "cash" ? "is-active" : ""}`}
-                  onClick={() => setPaymentField("method", "cash")}
-                >
-                  Contanti
-                </button>
-              </div>
-            </label>
-
-            {isCardLike && (
-              <div className="me__paymentFields me__paymentFields--enter">
-                <div className="me__row">
-                  <label className="me__label">
-                    Circuito
-                    <input
-                      className={`input ${fieldErrors["payment.cardBrand"] ? "input--error" : ""}`}
-                      value={form.payment.cardBrand}
-                      onChange={(e) => {
-                        setPaymentField("cardBrand", e.target.value);
-                        clearFieldError("payment.cardBrand");
-                      }}
-                      placeholder="Visa, MasterCard..."
-                    />
-                  </label>
-
-                  <label className="me__label">
-                    Ultime 4 cifre
-                    <input
-                      className={`input ${fieldErrors["payment.cardLast4"] ? "input--error" : ""}`}
-                      value={form.payment.cardLast4}
-                      onChange={(e) => {
-                        setPaymentField("cardLast4", e.target.value);
-                        clearFieldError("payment.cardLast4");
-                      }}
-                      placeholder="1234"
-                      inputMode="numeric"
-                      maxLength={4}
-                    />
-                  </label>
-                </div>
+              <div className="me__row">
+                <label className="me__label">
+                  Nome
+                  <input
+                    className={`input ${fieldErrors.firstName ? "input--error" : ""}`}
+                    value={form.firstName}
+                    onChange={(e) => {
+                      setField("firstName", e.target.value);
+                      clearFieldError("firstName");
+                    }}
+                    autoComplete="given-name"
+                  />
+                </label>
 
                 <label className="me__label">
-                  Intestatario
+                  Cognome
                   <input
-                    className={`input ${fieldErrors["payment.holderName"] ? "input--error" : ""}`}
-                    value={form.payment.holderName}
+                    className={`input ${fieldErrors.lastName ? "input--error" : ""}`}
+                    value={form.lastName}
                     onChange={(e) => {
-                      setPaymentField("holderName", e.target.value);
-                      clearFieldError("payment.holderName");
+                      setField("lastName", e.target.value);
+                      clearFieldError("lastName");
                     }}
-                    placeholder="Nome Cognome"
+                    autoComplete="family-name"
                   />
                 </label>
               </div>
-            )}
 
-            <div className="me__divider" />
+              <label className="me__label">
+                Vecchia password (per cambiare password)
+                <input
+                  className={`input ${fieldErrors.oldPassword ? "input--error" : ""}`}
+                  type="password"
+                  value={form.oldPassword}
+                  onChange={(e) => {
+                    setField("oldPassword", e.target.value);
+                    clearFieldError("oldPassword");
+                  }}
+                  autoComplete="current-password"
+                />
+              </label>
 
-            <div className="me__actionsRow">
-              <button className="btn btn--ghost" type="button" onClick={handleLogout}>
-                Logout
-              </button>
-
-              <button className="btn me__dangerBtn" type="button" onClick={() => setDangerOpen((v) => !v)}>
-                Elimina account
-              </button>
+              <label className="me__label">
+                Nuova password
+                <input
+                  className={`input ${fieldErrors.newPassword ? "input--error" : ""}`}
+                  type="password"
+                  value={form.newPassword}
+                  onChange={(e) => {
+                    setField("newPassword", e.target.value);
+                    clearFieldError("newPassword");
+                  }}
+                  placeholder="Min 8 caratteri"
+                  autoComplete="new-password"
+                />
+              </label>
             </div>
 
-            {dangerOpen && (
-              <div className="me__dangerBox" style={{ marginTop: 10 }}>
-                <p style={{ margin: 0, opacity: 0.9 }}>
-                  Questa azione è irreversibile. Se hai ordini attivi, verrà bloccata.
-                </p>
+            <div className="card me__panel card--flat">
+              <h3 className="me__panelTitle">Preferenze</h3>
+              <div className="me__panelDivider" />
+              <label className="me__label">
+                Piatti preferiti
+                <input
+                  className="input"
+                  value={form.preferences.favoriteMealTypes}
+                  onChange={(e) => setPrefField("favoriteMealTypes", e.target.value)}
+                  placeholder="burger, pizza, salad..."
+                />
+              </label>
 
-                <div className="me__dangerActions">
-                  <button className="btn btn--secondary" type="button" onClick={() => setDangerOpen(false)}>
-                    Annulla
-                  </button>
+              <label className="me__checkbox">
+                <input
+                  type="checkbox"
+                  checked={form.preferences.marketingOptIn}
+                  onChange={(e) => setPrefField("marketingOptIn", e.target.checked)}
+                />
+                <span> Tienimi aggiornato su offerte e promozioni</span>
+              </label>
+
+              <div className="me__divider" />
+
+              <label className="me__label">
+                Metodo di pagamento
+                <div className="me__segmented" role="radiogroup" aria-label="Payment method">
                   <button
-                    className="btn me__dangerConfirm"
                     type="button"
-                    onClick={handleDeleteAccount}
-                    disabled={deleteBusy}
+                    role="radio"
+                    aria-checked={form.payment.method === "card"}
+                    className={`me__segBtn ${form.payment.method === "card" ? "is-active" : ""}`}
+                    onClick={() => setPaymentField("method", "card")}
                   >
-                    {deleteBusy ? "Eliminazione..." : "Sì, elimina"}
+                    Carta
+                  </button>
+
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={form.payment.method === "prepaid"}
+                    className={`me__segBtn ${form.payment.method === "prepaid" ? "is-active" : ""}`}
+                    onClick={() => setPaymentField("method", "prepaid")}
+                  >
+                    Prepagata
+                  </button>
+
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={form.payment.method === "cash"}
+                    className={`me__segBtn ${form.payment.method === "cash" ? "is-active" : ""}`}
+                    onClick={() => setPaymentField("method", "cash")}
+                  >
+                    Contanti
                   </button>
                 </div>
-              </div>
-            )}
+              </label>
+
+              {isCardLike && (
+                <div className="me__paymentFields me__paymentFields--enter">
+                  <div className="me__row">
+                    <label className="me__label">
+                      Circuito
+                      <input
+                        className={`input ${fieldErrors["payment.cardBrand"] ? "input--error" : ""}`}
+                        value={form.payment.cardBrand}
+                        onChange={(e) => {
+                          setPaymentField("cardBrand", e.target.value);
+                          clearFieldError("payment.cardBrand");
+                        }}
+                        placeholder="Visa, MasterCard..."
+                      />
+                    </label>
+
+                    <label className="me__label">
+                      Ultime 4 cifre
+                      <input
+                        className={`input ${fieldErrors["payment.cardLast4"] ? "input--error" : ""}`}
+                        value={form.payment.cardLast4}
+                        onChange={(e) => {
+                          setPaymentField("cardLast4", e.target.value);
+                          clearFieldError("payment.cardLast4");
+                        }}
+                        placeholder="1234"
+                        inputMode="numeric"
+                        maxLength={4}
+                      />
+                    </label>
+                  </div>
+
+                  <label className="me__label">
+                    Intestatario
+                    <input
+                      className={`input ${fieldErrors["payment.holderName"] ? "input--error" : ""}`}
+                      value={form.payment.holderName}
+                      onChange={(e) => {
+                        setPaymentField("holderName", e.target.value);
+                        clearFieldError("payment.holderName");
+                      }}
+                      placeholder="Nome Cognome"
+                    />
+                  </label>
+                </div>
+              )}
+            </div>
+          </div>
+        </fieldset>
+
+        <div className={`me__editActions ${isEditing ? "is-open" : ""}`}>
+          <button className="btn btn--primary" type="submit" disabled={isSaving}>
+            {isSaving ? "Salvataggio..." : "Salva modifiche"}
+          </button>
+
+          <button className="btn btn--ghost" type="button" onClick={handleCancelEdit}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <LuX aria-hidden />
+              Annulla
+            </span>
+          </button>
+        </div>
+
+        <div className="me__footerBar">
+          <div className="me__footerLeft">
+            <Link to="/" className="btn btn--ghost">
+              Torna alla Home
+            </Link>
+          </div>
+
+          <div className="me__footerRight">
+            <button className="btn btn--ghost" type="button" onClick={handleLogout}>
+              Logout
+            </button>
+
+            <button className="btn me__dangerBtn" type="button" onClick={() => setDangerOpen((v) => !v)}>
+              Elimina account
+            </button>
           </div>
         </div>
-      </div>
+
+
+        {dangerOpen && (
+          <div className="me__dangerBox" style={{ marginTop: 10 }}>
+            <p style={{ margin: 0, opacity: 0.9 }}>
+              Questa azione è irreversibile. Se hai ordini attivi, verrà bloccata.
+            </p>
+
+            <div className="me__dangerActions">
+              <button className="btn btn--secondary" type="button" onClick={() => setDangerOpen(false)}>
+                Annulla
+              </button>
+              <button className="btn me__dangerConfirm" type="button" onClick={handleDeleteAccount} disabled={deleteBusy}>
+                {deleteBusy ? "Eliminazione..." : "Sì, elimina"}
+              </button>
+            </div>
+          </div>
+        )}
+      </form>
     </div>
   );
 }

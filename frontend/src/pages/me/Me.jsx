@@ -3,31 +3,24 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 import CustomerMe from "./CustomerMe";
 import SellerMe from "./SellerMe";
+import TopBar from "../../components/TopBar";
 import "./Me.css";
 
 export default function Me() {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="page">
-        <div className="container">
-          <div className="card me__card">
-            <p style={{ margin: 0, opacity: 0.85 }}>Caricamento profilo...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const { user } = useAuth();
 
   if (!user) return <Navigate to="/" replace />;
 
-  const role = (user.role).toLowerCase();
+  const role = user.role.toLowerCase();
   const isSeller = role === "seller";
 
   return (
-    <div className="auth">
-      <div className="container">{isSeller ? <SellerMe /> : <CustomerMe />}</div>
+    <div className="meLayout page">
+      <TopBar variant="brandOnly" />
+
+      <main className="meLayout__main">
+        <div className="container">{isSeller ? <SellerMe /> : <CustomerMe />}</div>
+      </main>
     </div>
   );
 }

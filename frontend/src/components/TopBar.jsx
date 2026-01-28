@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import logo from "../assets/logo.png";
 
-
 function UserIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -22,9 +21,11 @@ function UserIcon() {
   );
 }
 
-export default function TopBar() {
+export default function TopBar({ variant = "default" }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const isBrandOnly = variant === "brandOnly";
 
   const handleLogout = () => {
     logout();
@@ -36,12 +37,7 @@ export default function TopBar() {
       <div className="topbar__inner">
         {/* sx */}
         <Link to="/" className="topbar__logo">
-          <img
-            src={logo}
-            alt="FastFood logo"
-            className="topbar__logo-img"
-          />
-
+          <img src={logo} alt="FastFood logo" className="topbar__logo-img" />
           <div className="topbar__title">
             Fast<span>Food</span>
           </div>
@@ -52,7 +48,7 @@ export default function TopBar() {
 
         {/* dx */}
         <div className="topbar__actions">
-          {user ? (
+          {isBrandOnly ? null : user ? (
             <div className="userMenu">
               <span className="userMenu__trigger">
                 <UserIcon />

@@ -3,45 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 import "./Auth.css";
 import logo from "/src/assets/logo.png";
-
-function CustomerIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path
-        d="M4 20.2a8 8 0 0 1 16 0"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function SellerIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M3 10h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path
-        d="M5 10V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M6 10l1.2 10h9.6L18 10"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path d="M9 14v4M15 14v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
+import { LuUser, LuStore } from "react-icons/lu";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -218,7 +180,7 @@ export default function Register() {
                       flex: "0 0 auto",
                     }}
                   >
-                    <CustomerIcon />
+                    <LuUser className="auth__roleIcon" />
                   </span>
 
                   <span style={{ display: "grid", gap: 2, textAlign: "left" }}>
@@ -254,7 +216,7 @@ export default function Register() {
                       flex: "0 0 auto",
                     }}
                   >
-                    <SellerIcon />
+                    <LuStore className="auth__roleIcon" />
                   </span>
 
                   <span style={{ display: "grid", gap: 2, textAlign: "left" }}>
