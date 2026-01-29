@@ -208,6 +208,16 @@
   word-break: break-word;
 }
 
+.mealBadge--link {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mealBadge--link:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
 @media (max-width: 900px) {
   .mealHero {
     grid-template-columns: 1fr;
@@ -221,3 +231,4 @@
     grid-template-columns: 1fr;
   }
 }
+

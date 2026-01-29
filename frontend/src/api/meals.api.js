@@ -1,5 +1,10 @@
 import http from "./http.js";
 
+export async function listMealsApi(params = {}) {
+  const { data } = await http.get("/api/meals", { params });
+  return data?.meals || data || [];
+}
+
 export async function listSelectableMealsApi() {
   const { data } = await http.get("/api/meals/selectable");
   return data?.meals || data || [];

@@ -1,4 +1,4 @@
-.home {
+home {
   min-height: 100vh;
 }
 
@@ -33,12 +33,13 @@
   flex-wrap: wrap;
 }
 
+/* CARD PIÙ GRANDE */
 .home__restaurants-card {
   display: block;
   text-decoration: none;
   color: inherit;
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 24px;
+  padding: 26px;
   border: 1px solid rgba(255, 255, 255, 0.10);
   background: rgba(255, 255, 255, 0.05);
   transition: transform 0.15s ease, border-color 0.15s ease;
@@ -49,9 +50,12 @@
   border-color: rgba(255, 188, 13, 0.35);
 }
 
+/* Contenitore immagine (thumbnail) */
 .home__restaurants-image {
-  height: 180px;
-  border-radius: 16px;
+  height: 240px;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 18px;
   background:
     radial-gradient(
       circle at 30% 30%,
@@ -59,16 +63,30 @@
       rgba(255, 188, 13, 0.02) 60%
     ),
     linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
-  margin-bottom: 16px;
+}
+
+.home__restaurants-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.home__restaurants-imagePh {
+  width: 100%;
+  height: 100%;
 }
 
 .home__restaurants-title {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
+  font-size: 22px;
 }
 
 .home__restaurants-text {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   opacity: 0.8;
+  font-size: 15.5px;
+  line-height: 1.4;
 }
 
 .home__restaurants-cta {
@@ -88,4 +106,59 @@
   .home__hero-text h1 {
     font-size: 42px;
   }
+
+  .home__restaurants-image {
+    height: 220px;
+  }
+}
+
+@media (max-width: 560px) {
+  .home__restaurants-card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .home__restaurants-image {
+    height: 200px;
+    border-radius: 16px;
+  }
+}
+
+.home__restaurants-image {
+  position: relative;
+}
+
+.home__restaurants-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.45),
+    rgba(0, 0, 0, 0.05) 55%,
+    rgba(0, 0, 0, 0)
+  );
+  pointer-events: none;
+}
+
+.home__featured-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  border-radius: 999px;
+  color: #000;
+  background: var(--accent);
+  box-shadow: 0 4px 14px rgba(255, 188, 13, 0.45);
+}
+
+.home__restaurants-card:hover .home__restaurants-image img {
+  transform: scale(1.04);
+}
+
+.home__restaurants-image img {
+  transition: transform 0.35s ease;
 }

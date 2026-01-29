@@ -18,7 +18,7 @@ export default function TopBar({ variant = "default" }) {
   return (
     <header className="topbar">
       <div className="topbar__inner">
-        {/* sx */}
+        {/* left */}
         <Link to="/" className="topbar__logo">
           <img src={logo} alt="FastFood logo" className="topbar__logo-img" />
           <div className="topbar__title">
@@ -26,10 +26,31 @@ export default function TopBar({ variant = "default" }) {
           </div>
         </Link>
 
-        {/* centro */}
-        <div className="topbar__center" />
+        {/* center */}
+        <div className="topbar__center">
+          {isBrandOnly ? null : (
+            <nav className="topbar__nav" aria-label="Sezioni principali">
+              <Link to="/restaurants" className="topbar__navLink">
+                Ristoranti
+              </Link>
 
-        {/* dx */}
+              <span className="topbar__navDivider" />
+
+              <Link to="/meals" className="topbar__navLink">
+                I nostri piatti
+              </Link>
+
+              <span className="topbar__navDivider" />
+
+              <Link to="/promotions" className="topbar__navLink">
+                Novità e promozioni
+              </Link>
+            </nav>
+
+          )}
+        </div>
+
+        {/* right */}
         <div className="topbar__actions">
           {isBrandOnly ? null : user ? (
             <div className="userMenu">

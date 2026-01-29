@@ -233,8 +233,8 @@ textarea.input {
 /* centro */
 .topbar__center {
   display: flex;
-  justify-content: center;
-  gap: 18px;
+  justify-content: flex-start;
+  padding-left: 48px;
 }
 
 /* dx */
@@ -242,6 +242,35 @@ textarea.input {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.topbar__navDivider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.topbar__navLink {
+  text-decoration: none;
+  font-weight: 900;
+  padding: 8px 10px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.92);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  font-size: 15px;
+  letter-spacing: 0.2px;
+}
+
+.topbar__navLink:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--accent);
+  transform: translateY(-1px);
 }
 
 /* mobile */
@@ -255,6 +284,13 @@ textarea.input {
   }
   .topbar__title {
     display: none; 
+  }
+  .topbar__nav {
+    gap: 10px;
+  }
+  .topbar__navLink {
+    padding: 7px 8px;
+    font-size: 14px;
   }
 }
 

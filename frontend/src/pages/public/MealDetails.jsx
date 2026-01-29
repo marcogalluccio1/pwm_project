@@ -163,10 +163,15 @@ export default function MealDetails() {
 
               <div className="mealHero__info">
                 <div className="mealHero__badges">
-                  <span className="mealBadge">
+                  <Link
+                    to={`/meals?category=${encodeURIComponent(meal.category)}`}
+                    className="mealBadge mealBadge--link"
+                    title={`Vedi tutti i piatti in categoria: ${meal.category}`}
+                  >
                     <LuTag aria-hidden />
                     {meal.category}
-                  </span>
+                  </Link>
+                
                 </div>
 
                 <h1 className="mealHero__title">{meal.name}</h1>
