@@ -351,7 +351,7 @@ export default function CustomerMe() {
                   className="input"
                   value={form.preferences.favoriteMealTypes}
                   onChange={(e) => setPrefField("favoriteMealTypes", e.target.value)}
-                  placeholder="burger, pizza, salad..."
+                  placeholder="beef, vegetarian, seafood..."
                 />
               </label>
 

@@ -87,16 +87,28 @@ export default function Meals() {
     const q = normalizeString(query);
     const cat = normalizeString(category);
 
-    return meals.filter((m) => {
-      const name = normalizeString(getMealName(m));
-      const mealCat = normalizeString(getMealCategory(m));
+    return meals
+      .filter((m) => {
+        const name = normalizeString(getMealName(m));
+        const mealCat = normalizeString(getMealCategory(m));
 
-      const matchesName = !q || name.includes(q);
-      const matchesCat = !cat || mealCat === cat;
+        const matchesName = !q || name.includes(q);
+        const matchesCat = !cat || mealCat === cat;
 
-      return matchesName && matchesCat;
-    });
+        return matchesName && matchesCat;
+      })
+      .sort((a, b) => {
+        const catA = getMealCategory(a);
+        const catB = getMealCategory(b);
+        const byCat = catA.localeCompare(catB);
+        if (byCat !== 0) return byCat;
+
+        const nameA = getMealName(a);
+        const nameB = getMealName(b);
+        return nameA.localeCompare(nameB);
+      });
   }, [meals, query, category]);
+
 
   const totalPages = useMemo(() => {
     return Math.max(1, Math.ceil(filteredMeals.length / pageSize));
@@ -127,10 +139,7 @@ export default function Meals() {
     const cats = Array.from(map.keys()).sort((a, b) => a.localeCompare(b));
     return cats.map((cat) => ({
       category: cat,
-      items: map
-        .get(cat)
-        .slice()
-        .sort((a, b) => getMealName(a).localeCompare(getMealName(b))),
+      items: map.get(cat),
     }));
   }, [pagedMeals]);
 

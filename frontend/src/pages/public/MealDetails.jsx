@@ -119,8 +119,8 @@ export default function MealDetails() {
               Home
             </Link>
             <span className="mealPage__crumbSep">/</span>
-            <Link to="/restaurants" className="mealPage__crumb">
-              Ristoranti
+            <Link to="/meals" className="mealPage__crumb">
+              I nostri piatti
             </Link>
             <span className="mealPage__crumbSep">/</span>
             <span className="mealPage__crumb is-current">Dettaglio piatto</span>

@@ -5,11 +5,10 @@
 }
 
 .mealsCat {
-  margin-bottom: 18px;
+  margin-bottom: 35px;
 }
 
 .mealsCat__title {
-  position: sticky;
   top: 0;
   z-index: 2;
   padding: 10px 12px;
@@ -19,6 +18,7 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(10px);
   font-weight: 1000;
+  font-size: 24px;
   color: var(--accent);
 }
 
