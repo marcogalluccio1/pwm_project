@@ -137,11 +137,27 @@ export default function RestaurantMenu() {
   function toggleMeal(id) {
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+        
+        setPricesById((prevPrices) => {
+          if (typeof prevPrices[id] === "undefined") {
+            return {
+              ...prevPrices,
+              [id]: 0.1,
+            };
+          }
+          return prevPrices;
+        });
+      }
+
       return next;
     });
   }
+
 
   function setPrice(id, value) {
     const num = Number(value);
@@ -173,12 +189,6 @@ export default function RestaurantMenu() {
       mealId: id,
       price: Number(pricesById[id] ?? 0),
     }));
-
-    const invalid = items.find((it) => !Number.isFinite(it.price) || it.price < 0.1);
-    if (invalid) {
-      setErr("Controlla i prezzi: devono essere numeri >= 0,10€.");
-      return;
-    }
 
 
     try {

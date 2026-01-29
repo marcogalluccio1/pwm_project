@@ -9,6 +9,7 @@ import CreateRestaurant from "./pages/seller/CreateRestaurant";
 import RestaurantManagement from "./pages/seller/RestaurantManagement";
 import RestaurantMenu from "./pages/seller/RestaurantMenu";
 import Restaurants from "./pages/public/Restaurants";
+import MealDetails from "./pages/public/MealDetails";
 
 export default function App() {
   const { isLoading } = useAuth();
@@ -25,6 +26,7 @@ export default function App() {
       <Route path="/seller/restaurant" element={<RestaurantManagement />} />
       <Route path="/seller/restaurant/menu" element={<RestaurantMenu />} />
       <Route path="/restaurants" element={<Restaurants />} />
+      <Route path="/meals/:id" element={<MealDetails />} />
       <Route path="*" element={<h1>404</h1>} />
     </Routes>
   );

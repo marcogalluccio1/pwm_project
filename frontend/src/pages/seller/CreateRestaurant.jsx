@@ -43,7 +43,7 @@ export default function CreateRestaurant() {
     if (!payload.address) next.address = true;
     if (!payload.city) next.city = true;
 
-    // very light phone validation (optional)
+    //phone validation
     if (payload.phone && payload.phone.length < 6) next.phone = true;
 
     setFieldErrors(next);
@@ -55,7 +55,7 @@ export default function CreateRestaurant() {
     setError("");
     setFieldErrors(initialErrors);
 
-    // quick guard: if not seller, go home (or to /login)
+    // role verifaication
     const role = String(user?.role || "").toLowerCase();
     if (role !== "seller") {
       setError("Solo un ristoratore può creare un ristorante.");
@@ -77,9 +77,6 @@ export default function CreateRestaurant() {
     setIsSubmitting(true);
     try {
       await createMyRestaurantApi(payload);
-
-      // dopo creazione vai alla pagina gestione ristorante (se ce l'hai)
-      // altrimenti vai su /me, che già mostra la sezione ristorante
       navigate("/me", { replace: true });
     } catch (err) {
       const status = err?.response?.status;
@@ -185,15 +182,7 @@ export default function CreateRestaurant() {
           <Link to="/" className="btn btn--ghost">
             Torna alla Home
           </Link>
-
-          <div className="auth__divider">
-            <span>oppure</span>
-          </div>
         </form>
-
-        <p className="auth__footer">
-          Hai già un ristorante? <Link to="/me">Gestiscilo dal profilo</Link>
-        </p>
       </div>
     </div>
   );

@@ -1,0 +1,277 @@
+.mealPage__wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 26px 24px 60px;
+}
+
+.mealPage__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.mealPage__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mealPage__crumbs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.9;
+  font-weight: 800;
+  flex-wrap: wrap;
+}
+
+.mealPage__crumb {
+  text-decoration: none;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.mealPage__crumb:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.mealPage__crumbSep {
+  opacity: 0.45;
+}
+
+.mealPage__crumb.is-current {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.mealGrid {
+  display: grid;
+  gap: 16px;
+}
+
+.mealCard {
+  padding: 18px;
+}
+
+.mealCard__loading {
+  padding: 22px;
+  opacity: 0.85;
+}
+
+.mealHero {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 18px;
+  padding: 18px;
+}
+
+.mealHero__media {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.05);
+  min-height: 280px;
+}
+
+.mealHero__media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.mealHero__ph {
+  height: 100%;
+  min-height: 280px;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  opacity: 0.8;
+  font-weight: 900;
+}
+
+.mealHero__info {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 8px 6px;
+}
+
+.mealHero__badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mealBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.mealBadge.is-global {
+  border-color: rgba(255, 188, 13, 0.35);
+}
+
+.mealBadge.is-custom {
+  border-color: rgba(140, 200, 255, 0.35);
+}
+
+.mealHero__title {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.06;
+}
+
+.mealHero__subtitle {
+  margin: 0;
+  opacity: 0.85;
+  line-height: 1.45;
+}
+
+.mealHero__meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.mealMeta {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.mealMeta__label {
+  font-size: 12px;
+  opacity: 0.75;
+  font-weight: 900;
+}
+
+.mealMeta__value {
+  font-weight: 900;
+}
+
+.mealHero__actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mealSection {
+  padding: 18px;
+}
+
+.mealSection__title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.mealSection__divider {
+  height: 1px;
+  margin: 12px 0 14px;
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.mealSection__empty {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.mealChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mealChip {
+  padding: 10px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mealInfoGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.mealInfoRow {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.mealInfoKey {
+  opacity: 0.75;
+  font-weight: 900;
+}
+
+.mealInfoVal {
+  font-weight: 900;
+  word-break: break-word;
+}
+
+@media (max-width: 900px) {
+  .mealHero {
+    grid-template-columns: 1fr;
+  }
+
+  .mealHero__title {
+    font-size: 36px;
+  }
+
+  .mealHero__meta {
+    grid-template-columns: 1fr;
+  }
+
+  .mealInfoRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mealBadge--special {
+  border-color: rgba(255, 188, 13, 0.35);
+}
+
+.mealHero__ingredients {
+  margin-top: 6px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.mealHero__ingredientsTitle {
+  font-weight: 1000;
+  opacity: 0.9;
+  margin-bottom: 10px;
+}
+
+.mealHero__ingredientsEmpty {
+  opacity: 0.8;
+  font-weight: 900;
+}
