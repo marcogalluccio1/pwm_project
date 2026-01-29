@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { LuPencil, LuX, LuStore, LuChartBar, LuUtensilsCrossed } from "react-icons/lu";
 import { useAuth } from "../../auth/useAuth";
@@ -35,7 +35,7 @@ export default function RestaurantManagement() {
   const [fieldErrors, setFieldErrors] = useState({});
   const msgTimer = useRef(null);
 
-  const initialForm = useMemo(
+  const initialForm = useState(
     () => ({
       name: "",
       phone: "",

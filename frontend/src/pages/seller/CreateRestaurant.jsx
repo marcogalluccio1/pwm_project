@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 import { createMyRestaurantApi } from "../../api/restaurants.api";
@@ -9,15 +9,12 @@ export default function CreateRestaurant() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const initialErrors = useMemo(
-    () => ({
-      name: false,
-      phone: false,
-      address: false,
-      city: false,
-    }),
-    []
-  );
+  const initialErrors = {
+    name: false,
+    phone: false,
+    address: false,
+    city: false,
+  };
 
   const [form, setForm] = useState({
     name: "",

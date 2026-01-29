@@ -24,6 +24,28 @@ function mealDetailsPath(id) {
   return `/meals/${id}`;
 }
 
+function rebuildSelectionAndPrices(menuIndex, allMeals) {
+  const nextSelected = new Set();
+  const nextPrices = {};
+
+  for (const [id, it] of menuIndex.entries()) {
+    nextSelected.add(id);
+    nextPrices[id] = Number(it?.price ?? 0);
+  }
+
+  for (const m of allMeals) {
+    const id = String(getMealId(m) || "");
+    if (!id) continue;
+
+    if (typeof nextPrices[id] === "undefined") {
+      const p = Number(m?.basePrice);
+      if (Number.isFinite(p)) nextPrices[id] = p;
+    }
+  }
+
+  return { nextSelected, nextPrices };
+}
+
 export default function RestaurantMenu() {
   const navigate = useNavigate();
 
@@ -77,26 +99,11 @@ export default function RestaurantMenu() {
   }, [myMenu]);
 
   useEffect(() => {
-    const nextSelected = new Set();
-    const nextPrices = {};
-
-    for (const [id, it] of menuIndex.entries()) {
-      nextSelected.add(id);
-      nextPrices[id] = Number(it?.price ?? 0);
-    }
-
-    for (const m of allMeals) {
-      const id = String(getMealId(m) || "");
-      if (!id) continue;
-      if (typeof nextPrices[id] === "undefined") {
-        const p = Number(m?.basePrice);
-        if (Number.isFinite(p)) nextPrices[id] = p;
-      }
-    }
-
+    const { nextSelected, nextPrices } = rebuildSelectionAndPrices(menuIndex, allMeals);
     setSelectedIds(nextSelected);
     setPricesById(nextPrices);
   }, [menuIndex, allMeals]);
+
 
   const filteredMeals = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -152,26 +159,11 @@ export default function RestaurantMenu() {
     setErr("");
     setMsg("");
 
-    const nextSelected = new Set();
-    const nextPrices = {};
-
-    for (const [id, it] of menuIndex.entries()) {
-      nextSelected.add(id);
-      nextPrices[id] = Number(it?.price ?? 0);
-    }
-
-    for (const m of allMeals) {
-      const id = String(getMealId(m) || "");
-      if (!id) continue;
-      if (typeof nextPrices[id] === "undefined") {
-        const p = Number(m?.basePrice);
-        if (Number.isFinite(p)) nextPrices[id] = p;
-      }
-    }
-
+    const { nextSelected, nextPrices } = rebuildSelectionAndPrices(menuIndex, allMeals);
     setSelectedIds(nextSelected);
     setPricesById(nextPrices);
   }
+
 
   async function handleSave() {
     setErr("");
