@@ -118,50 +118,28 @@
   border: 1px solid rgba(255, 255, 255, 0.10);
 }
 
-.mealBadge.is-global {
-  border-color: rgba(255, 188, 13, 0.35);
-}
-
-.mealBadge.is-custom {
-  border-color: rgba(140, 200, 255, 0.35);
-}
-
 .mealHero__title {
   margin: 0;
   font-size: 44px;
   line-height: 1.06;
 }
 
-.mealHero__subtitle {
-  margin: 0;
-  opacity: 0.85;
-  line-height: 1.45;
-}
-
-.mealHero__meta {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 4px;
-}
-
-.mealMeta {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
+.mealHero__ingredients {
+  margin-top: 6px;
   padding: 12px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.10);
 }
 
-.mealMeta__label {
-  font-size: 12px;
-  opacity: 0.75;
-  font-weight: 900;
+.mealHero__ingredientsTitle {
+  font-weight: 1000;
+  opacity: 0.9;
+  margin-bottom: 10px;
 }
 
-.mealMeta__value {
+.mealHero__ingredientsEmpty {
+  opacity: 0.8;
   font-weight: 900;
 }
 
@@ -170,26 +148,6 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-}
-
-.mealSection {
-  padding: 18px;
-}
-
-.mealSection__title {
-  margin: 0;
-  font-size: 20px;
-}
-
-.mealSection__divider {
-  height: 1px;
-  margin: 12px 0 14px;
-  background: rgba(255, 255, 255, 0.10);
-}
-
-.mealSection__empty {
-  margin: 0;
-  opacity: 0.8;
 }
 
 .mealChips {
@@ -208,6 +166,21 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.mealSection {
+  padding: 18px;
+}
+
+.mealSection__title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.mealSection__divider {
+  height: 1px;
+  margin: 12px 0 14px;
+  background: rgba(255, 255, 255, 0.10);
 }
 
 .mealInfoGrid {
@@ -244,34 +217,7 @@
     font-size: 36px;
   }
 
-  .mealHero__meta {
-    grid-template-columns: 1fr;
-  }
-
   .mealInfoRow {
     grid-template-columns: 1fr;
   }
-}
-
-.mealBadge--special {
-  border-color: rgba(255, 188, 13, 0.35);
-}
-
-.mealHero__ingredients {
-  margin-top: 6px;
-  padding: 12px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-}
-
-.mealHero__ingredientsTitle {
-  font-weight: 1000;
-  opacity: 0.9;
-  margin-bottom: 10px;
-}
-
-.mealHero__ingredientsEmpty {
-  opacity: 0.8;
-  font-weight: 900;
 }

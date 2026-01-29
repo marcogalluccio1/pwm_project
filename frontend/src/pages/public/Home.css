@@ -2,12 +2,6 @@
   min-height: 100vh;
 }
 
-.home__actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
 .home__hero {
   max-width: 1100px;
   margin: 0 auto;
@@ -58,7 +52,8 @@
 .home__restaurants-image {
   height: 180px;
   border-radius: 16px;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       circle at 30% 30%,
       rgba(255, 188, 13, 0.35),
       rgba(255, 188, 13, 0.02) 60%

@@ -60,6 +60,10 @@
   font-weight: 700;
 }
 
+.auth__step {
+  will-change: opacity, transform;
+}
+
 .auth__footer {
   margin-top: 14px;
   color: var(--muted);

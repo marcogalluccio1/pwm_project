@@ -6,7 +6,6 @@
   flex-direction: column;
 }
 
-
 .menuPage__content {
   padding: 18px;
   flex: 1;
@@ -17,7 +16,6 @@
 .menuPage__container {
   width: min(1100px, 100%);
   margin: 0 auto;
-  padding: 18px;
 
   flex: 1;
   min-height: 0;
@@ -47,15 +45,12 @@
 }
 
 .menuCard {
-  padding: var(--panel-padding);
   display: flex;
   flex-direction: column;
-
   flex: 1;
   min-height: 0;
   overflow: hidden;
 }
-
 
 .menuCard__head {
   display: flex;
@@ -95,13 +90,14 @@
 .menuCard__footer {
   margin-top: 12px;
   padding-top: 12px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
 
   border-top: 1px solid rgba(255, 255, 255, 0.12);
-  
+
   position: sticky;
   bottom: 0;
   backdrop-filter: blur(10px);
@@ -252,14 +248,13 @@
 
   padding: 2px;
   border-radius: 16px;
-  border: 0;
   background: rgba(0, 0, 0, 0.18);
   color: inherit;
   cursor: pointer;
   text-align: left;
 
-  transition: filter 0.12s ease, transform 0.12s ease, border-color 0.12s ease;
   border: 1px solid rgba(255, 255, 255, 0.10);
+  transition: filter 0.12s ease, transform 0.12s ease, border-color 0.12s ease;
 }
 
 .menuItem__main:hover {
@@ -300,7 +295,6 @@
   text-overflow: ellipsis;
 }
 
-/* Price appears only when checked (fade) */
 .menuItem__priceWrap {
   grid-column: 2;
   margin-top: 10px;
@@ -335,37 +329,6 @@
   text-align: right;
 }
 
-/* Actions: bottom-left, not full width */
-.menuCard__actions {
-  position: absolute;
-  left: var(--panel-padding);
-  bottom: var(--panel-padding);
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  visibility: hidden;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-4px);
-  transition: opacity 160ms ease, transform 160ms ease;
-}
-
-.menuCard__actions.is-open {
-  visibility: visible;
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-@media (max-width: 560px) {
-  .menuCard__actions {
-    right: var(--panel-padding);
-    flex-wrap: wrap;
-  }
-}
-
 .menuCard__addBtn {
   display: inline-flex;
   align-items: center;
@@ -385,10 +348,6 @@
 }
 
 @media (max-width: 560px) {
-  .menuCard {
-    max-height: none;
-  }
-
   .menuCard__footer {
     flex-direction: column;
     align-items: stretch;
