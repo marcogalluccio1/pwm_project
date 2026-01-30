@@ -5,6 +5,16 @@ export async function listRestaurantsApi(params = {}) {
   return response.data;
 }
 
+export async function getRestaurantByIdApi(id) {
+  const response = await http.get(`/api/restaurants/${id}`);
+  return response.data;
+}
+
+export async function getRestaurantMenuApi(restaurantId, params = {}) {
+  const { data } = await http.get(`/api/restaurants/${restaurantId}/menu`, { params });
+  return data;
+}
+
 export async function getMyRestaurantApi() {
   const response = await http.get("/api/restaurants/mine");
   return response.data;

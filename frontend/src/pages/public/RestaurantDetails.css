@@ -1,0 +1,484 @@
+@import "../../styles/detailsPage.css";
+@import "../../styles/searchPage.css";
+
+/* Grid/cards like MealDetails */
+.restaurantGrid {
+  display: grid;
+  gap: 16px;
+}
+
+.restaurantCard {
+  padding: 18px;
+}
+
+/* Hero like MealDetails */
+.restaurantHero {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 18px;
+  padding: 18px;
+}
+
+.restaurantHero__media {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.05);
+  min-height: 280px;
+}
+
+.restaurantHero__media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.restaurantHero__ph {
+  height: 100%;
+  min-height: 280px;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  opacity: 0.8;
+  font-weight: 900;
+}
+
+.restaurantHero__info {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 8px 6px;
+}
+
+.restaurantHero__name {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.06;
+  font-weight: 1000;
+  letter-spacing: -0.02em;
+}
+
+.restaurantHero__badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.restaurantHero__details {
+  margin-top: 6px;
+  display: grid;
+  gap: 10px;
+}
+
+.detailRow {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.detailLabel {
+  opacity: 0.75;
+  font-weight: 900;
+}
+
+.detailValue {
+  font-weight: 900;
+  word-break: break-word;
+}
+
+.restaurantHero__desc {
+  margin: 0;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+/* Order card between details and menu */
+.orderCard {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.orderCard__title {
+  font-weight: 1000;
+}
+
+.orderCard__subtitle {
+  margin-top: 4px;
+  opacity: 0.85;
+  font-weight: 700;
+}
+
+.orderCard__right {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.orderSummary {
+  width: 220px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.orderSummary__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+/* Menu */
+.menuSection__header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.menuSection__title {
+  margin: 0;
+  font-weight: 1000;
+  font-size: 20px;
+}
+
+.menuSection__subtitle {
+  margin: 6px 0 0;
+  opacity: 0.85;
+}
+
+.menuTools {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.menuTools__search {
+  width: min(360px, 40vw);
+}
+
+.mealsCat {
+  margin-top: 16px;
+}
+
+.mealsCat__title {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  border-radius: 14px;
+  background: rgba(20, 20, 22, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  font-weight: 1000;
+  color: var(--accent);
+}
+
+.mealsCat__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 1050px) {
+  .mealsCat__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .restaurantHero {
+    grid-template-columns: 1fr;
+  }
+
+  .restaurantHero__name {
+    font-size: 36px;
+  }
+
+  .detailRow {
+    grid-template-columns: 1fr;
+  }
+
+  .menuTools__search {
+    width: min(360px, 52vw);
+  }
+
+  .mealsCat__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .orderCard {
+    grid-template-columns: 1fr;
+  }
+
+  .orderCard__right {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 560px) {
+  .mealsCat__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .menuTools {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .menuTools__search,
+  .menuSearch {
+    width: 100%;
+  }
+
+  .orderSummary {
+    width: 100%;
+  }
+}
+
+.mealCardMini {
+  padding: 10px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  display: grid;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.mealCardMini__link {
+  text-decoration: none;
+  color: inherit;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.mealCardMini__thumb {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  height: 140px;
+}
+
+.mealCardMini__thumb img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.mealCardMini__ph {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  opacity: 0.85;
+}
+
+.mealCardMini__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+
+.mealCardMini__name {
+  min-width: 0;
+  flex: 1 1 auto;
+  font-weight: 1000;
+  font-size: 15px;
+  line-height: 1.2;
+
+  display: -webkit-box;
+  line-clamp: 2;
+  box-orient: vertical;
+
+  overflow: hidden;
+}
+
+.mealCardMini__price {
+  font-weight: 1000;
+  color: var(--accent);
+  flex: 0 0 auto;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+.mealsFilter {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.mealsFilter__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mealsFilter__btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.mealsFilter__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: min(340px, calc(100vw - 24px));
+  padding: 10px;
+  z-index: 50;
+  background: rgba(20, 20, 22, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.42);
+}
+
+.mealsFilter__divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.10);
+  margin: 10px 0;
+}
+
+.mealsFilter__item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease, border-color 0.12s ease;
+  margin: 5px 0;
+}
+
+.mealsFilter__item:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  border-color: rgba(255, 188, 13, 0.30);
+}
+
+.mealsFilter__item.is-active {
+  border-color: rgba(255, 188, 13, 0.45);
+  background: rgba(255, 188, 13, 0.10);
+}
+
+.filterBlock__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.filterBlock__title {
+  font-weight: 1000;
+}
+
+.linkBtn {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-weight: 900;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+
+.linkBtn:hover {
+  filter: brightness(1.08);
+}
+
+.priceRange__values {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 900;
+  margin: 6px 0 10px;
+}
+
+.priceRange {
+  display: grid;
+  gap: 10px;
+}
+
+.w100 {
+  width: 100%;
+}
+
+.mealOrderControls {
+  display: grid;
+  grid-template-columns: 36px 1fr 36px;
+  gap: 8px;
+  align-items: center;
+}
+
+.iconBtn {
+  height: 36px;
+  width: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease, border-color 0.12s ease;
+}
+
+.iconBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  border-color: rgba(255, 188, 13, 0.30);
+}
+
+.iconBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.qtyInput {
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  font-weight: 900;
+  text-align: center;
+  outline: none;
+}
+
+.mealCardMini .mealCardMini__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}

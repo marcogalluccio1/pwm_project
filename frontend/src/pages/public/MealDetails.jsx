@@ -107,23 +107,23 @@ export default function MealDetails() {
     <div className="mealPage page">
       <TopBar />
 
-      <main className="mealPage__wrap">
-        <div className="mealPage__top">
-          <button type="button" className="btn btn--ghost mealPage__back" onClick={() => navigate(-1)}>
+      <main className="page__wrap">
+        <div className="page__top">
+          <button type="button" className="btn btn--ghost page__back" onClick={() => navigate(-1)}>
             <LuArrowLeft aria-hidden />
             Indietro
           </button>
 
-          <div className="mealPage__crumbs">
-            <Link to="/" className="mealPage__crumb">
+          <div className="page__crumbs">
+            <Link to="/" className="page__crumb">
               Home
             </Link>
-            <span className="mealPage__crumbSep">/</span>
-            <Link to="/meals" className="mealPage__crumb">
+            <span className="page__crumbSep">/</span>
+            <Link to="/meals" className="page__crumb">
               I nostri piatti
             </Link>
-            <span className="mealPage__crumbSep">/</span>
-            <span className="mealPage__crumb is-current">Dettaglio piatto</span>
+            <span className="page__crumbSep">/</span>
+            <span className="page__crumb is-current">Dettaglio piatto</span>
           </div>
         </div>
 

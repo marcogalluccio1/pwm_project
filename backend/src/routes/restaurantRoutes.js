@@ -164,6 +164,40 @@ router.get("/mine/stats", requireAuth, requireRole("seller"), getMyRestaurantSta
 
 
 /**
+ * @swagger
+ * /api/restaurants/mine/menu:
+ *   put:
+ *     tags: [Restaurants]
+ *     summary: Set my restaurant menu (replace entire menu) (seller only)
+ *     description: Set the menu with the provided items.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [items]
+ *             properties:
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required: [mealId, price]
+ *                   properties:
+ *                     mealId: { type: string }
+ *                     price: { type: number }
+ *     responses:
+ *       200: { description: OK (updated menu items) }
+ *       400: { description: Invalid input data }
+ *       401: { description: Missing or invalid token }
+ *       403: { description: Forbidden (not seller or meal not allowed) }
+ *       404: { description: Restaurant not found or some meals not found }
+ */
+router.put("/mine/menu", requireAuth, requireRole("seller"), setMyMenu);
+
+/**
 * @swagger
 * /api/restaurants/{id}/menu:
 *   get:
@@ -213,39 +247,5 @@ router.get("/:id/menu", getRestaurantMenu);
  *       404: { description: Restaurant not found }
  */
 router.get("/:id", getRestaurantById);
-
-/**
- * @swagger
- * /api/restaurants/mine/menu:
- *   put:
- *     tags: [Restaurants]
- *     summary: Set my restaurant menu (replace entire menu) (seller only)
- *     description: Set the menu with the provided items.
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [items]
- *             properties:
- *               items:
- *                 type: array
- *                 items:
- *                   type: object
- *                   required: [mealId, price]
- *                   properties:
- *                     mealId: { type: string }
- *                     price: { type: number }
- *     responses:
- *       200: { description: OK (updated menu items) }
- *       400: { description: Invalid input data }
- *       401: { description: Missing or invalid token }
- *       403: { description: Forbidden (not seller or meal not allowed) }
- *       404: { description: Restaurant not found or some meals not found }
- */
-router.put("/mine/menu", requireAuth, requireRole("seller"), setMyMenu);
 
 export default router;

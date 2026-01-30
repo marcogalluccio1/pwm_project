@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 import "../../styles/auth.css";
 import logo from "/src/assets/logo.png";
@@ -18,6 +18,10 @@ export default function Login() {
     email: false,
     password: false,
   });
+
+  const location = useLocation();
+  const redirectTo = location.state?.from || "/";
+
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -46,7 +50,7 @@ export default function Login() {
     setIsSubmitting(true);
     try {
       await login(normalizedEmail, password);
-      navigate("/", { replace: true });
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       const status = err?.response?.status;
       const message = err?.response?.data?.message;

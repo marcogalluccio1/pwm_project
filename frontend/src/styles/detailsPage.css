@@ -1,0 +1,49 @@
+.page__wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 26px 24px 60px;
+}
+
+.page__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page__crumbs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.9;
+  font-weight: 800;
+  flex-wrap: wrap;
+}
+
+.page__crumb {
+  text-decoration: none;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.page__crumb:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.page__crumbSep {
+  opacity: 0.45;
+}
+
+.page__crumb.is-current {
+  opacity: 1;
+  color: var(--accent);
+}
