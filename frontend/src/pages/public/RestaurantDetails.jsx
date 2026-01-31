@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { LuArrowLeft, LuFilter, LuImageOff, LuMinus, LuPlus, LuSearch, LuX } from "react-icons/lu";
 
@@ -98,6 +98,22 @@ export default function RestaurantDetails() {
 
   const [orderMode, setOrderMode] = useState(false);
   const [cart, setCart] = useState({});
+  
+  useEffect(() => {
+    const incomingCart = location.state?.cart;
+
+    if (incomingCart && typeof incomingCart === "object") {
+      setCart(incomingCart);
+      setOrderMode(true);
+    }
+  }, [location.state]);
+
+  const menuSectionRef = useRef(null);
+
+  function scrollToMenu() {
+    menuSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
 
   const restaurantCover = useMemo(() => {
     const idx = hashStringToIndex(id, RESTAURANT_COVERS.length);
@@ -386,7 +402,10 @@ export default function RestaurantDetails() {
                     <button
                       type="button"
                       className="btn btn--primary"
-                      onClick={onToggleOrder}
+                      onClick={() => {
+                        onToggleOrder();
+                        scrollToMenu();
+                      }}
                       disabled={isLogged && !isCustomer}
                     >
                       {isLogged ? "Ordina" : "Accedi per ordinare"}
@@ -413,11 +432,11 @@ export default function RestaurantDetails() {
                   {isCustomer && orderMode ? (
                     <div className="orderSummary">
                       <div className="orderSummary__row">
-                        <span>Articoli</span>
+                        <span>Piatti:</span>
                         <strong>{cartCount}</strong>
                       </div>
                       <div className="orderSummary__row">
-                        <span>Totale</span>
+                        <span>Totale:</span>
                         <strong>{formatEUR(cartTotal)}</strong>
                       </div>
                     </div>
@@ -426,7 +445,7 @@ export default function RestaurantDetails() {
               </section>
             ) : null}
 
-            <section className="card restaurantCard">
+            <section ref={menuSectionRef} className="card restaurantCard">
               <div className="menuSection__header">
                 <div>
                   <h2 className="menuSection__title">Menù</h2>
@@ -575,7 +594,10 @@ export default function RestaurantDetails() {
                           const qty = cart[mealId] || 0;
 
                           return (
-                            <div key={mealId} className="mealCardMini card">
+                            <div
+                              key={mealId}
+                              className={`mealCardMini card ${qty > 0 ? "mealCardMini--inCart" : ""}`}
+                            >
                               <Link to={`/meals/${mealId}`} className="mealCardMini__link" aria-label={name} title={name}>
                                 <div className="mealCardMini__thumb">
                                   {thumb ? (

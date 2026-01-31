@@ -17,7 +17,7 @@ const UserSchema = new mongoose.Schema(
       method: {
         type: String,
         enum: ["card", "prepaid", "cash"],
-        default: "card",
+        default: null,
       },
       cardBrand: { type: String, trim: true }, 
       cardLast4: { type: String, trim: true }, 

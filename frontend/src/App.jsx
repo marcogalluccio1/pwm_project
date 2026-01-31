@@ -12,6 +12,7 @@ import Restaurants from "./pages/public/Restaurants";
 import RestaurantDetails from "./pages/public/RestaurantDetails";
 import Meals from "./pages/public/Meals";
 import MealDetails from "./pages/public/MealDetails";
+import Checkout from "./pages/customer/Checkout";
 
 export default function App() {
   const { isLoading } = useAuth();
@@ -31,6 +32,7 @@ export default function App() {
       <Route path="/restaurants/:id" element={<RestaurantDetails />} />
       <Route path="/meals" element={<Meals />} />
       <Route path="/meals/:id" element={<MealDetails />} />
+      <Route path="/checkout" element={<Checkout />} />
 
       <Route path="*" element={<h1>404</h1>} />
     </Routes>

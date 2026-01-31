@@ -1,7 +1,6 @@
 @import "../../styles/detailsPage.css";
 @import "../../styles/searchPage.css";
 
-/* Grid/cards like MealDetails */
 .restaurantGrid {
   display: grid;
   gap: 16px;
@@ -11,7 +10,6 @@
   padding: 18px;
 }
 
-/* Hero like MealDetails */
 .restaurantHero {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
@@ -107,7 +105,6 @@
   line-height: 1.4;
 }
 
-/* Order card between details and menu */
 .orderCard {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -147,7 +144,6 @@
   padding: 4px 0;
 }
 
-/* Menu */
 .menuSection__header {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -481,4 +477,11 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.mealCardMini.mealCardMini--inCart {
+  border: 2px solid rgba(255, 188, 13, 0.55);
+  background: rgba(255, 188, 13, 0.10);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+  transform: translateY(-1px);
 }

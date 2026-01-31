@@ -145,7 +145,6 @@ export default function Register() {
           </div>
         )}
 
-        {/* IMPORTANT: key forces remount => CSS animation replays on step change */}
         <div
           className={`auth__step ${
             direction === "back" ? "auth__step--back" : "auth__step--forward"
