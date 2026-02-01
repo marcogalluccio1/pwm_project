@@ -75,7 +75,7 @@ export default function TopBar({ variant = "default" }) {
                 </Link>
 
                 {isCustomer ? (
-                  <Link to="/orders" className="userMenu__item">
+                  <Link to="/customer/orders" className="userMenu__item">
                     I tuoi ordini
                   </Link>
                   ) : ""

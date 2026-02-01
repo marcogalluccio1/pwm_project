@@ -1,60 +1,4 @@
-.ordersPage {
-  min-height: 100vh;
-}
-
-.ordersWrap {
-  width: min(1200px, calc(100% - 24px));
-  margin: 0 auto;
-  padding: 18px 0 28px;
-}
-
-.ordersHeader {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-.ordersBack {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-  color: inherit;
-  cursor: pointer;
-}
-
-.ordersTitle {
-  margin: 0;
-  font-size: 24px;
-  letter-spacing: -0.02em;
-}
-
-.ordersSubtitle {
-  margin: 4px 0 0;
-  opacity: 0.85;
-}
-
-.ordersLink {
-  text-decoration: none;
-  font-weight: 900;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-  color: inherit;
-}
-
-.ordersGrid {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 14px;
-  align-items: start;
-}
+@import "../../styles/ordersPage.css";
 
 .orderTrackOuter {
   margin-top: 14px;
@@ -516,7 +460,7 @@
   opacity: 0.85;
 }
 
-.orderInfoRow {
+.customerOrders .orderInfoRow {
   margin-top: 12px;
   display: grid;
   grid-template-columns: 1fr 1fr auto;

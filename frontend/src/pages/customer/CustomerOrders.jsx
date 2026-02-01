@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LuArrowLeft, LuClock, LuPackage, LuStore, LuTruck, LuShoppingBag } from "react-icons/lu";
+import { useLocation, useNavigate } from "react-router-dom";
+import { LuArrowLeft, LuPackage, LuStore, LuShoppingBag } from "react-icons/lu";
 
 import TopBar from "../../components/TopBar";
 import { useAuth } from "../../auth/useAuth";
@@ -100,7 +100,7 @@ export default function CustomerOrders() {
     if (isLoading) return;
 
     if (!isLogged) {
-      navigate("/login", { state: { from: "/orders" }, replace: true });
+      navigate("/login", { state: { from: "/customer/orders" }, replace: true });
       return;
     }
 
@@ -165,7 +165,7 @@ export default function CustomerOrders() {
   }
 
   return (
-    <div className="ordersPage">
+    <div className="ordersPage ">
       <TopBar />
 
       <div className="ordersWrap">
@@ -364,6 +364,9 @@ function OrderRow({ order, kind, highlight }) {
           </div>
         </div>
       ) : null}
+      <div className="orderId">
+        <p>ID ordine: <span>{getOrderId(order)}</span></p>
+      </div>
     </div>
   );
 }

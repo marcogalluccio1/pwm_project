@@ -14,6 +14,7 @@ import Meals from "./pages/public/Meals";
 import MealDetails from "./pages/public/MealDetails";
 import Checkout from "./pages/customer/Checkout";
 import CustomerOrders from "./pages/customer/CustomerOrders";
+import RestaurantOrders from "./pages/seller/RestaurantOrders";
 
 export default function App() {
   const { isLoading } = useAuth();
@@ -34,9 +35,10 @@ export default function App() {
       <Route path="/meals" element={<Meals />} />
       <Route path="/meals/:id" element={<MealDetails />} />
       <Route path="/checkout" element={<Checkout />} />
-      <Route path="/orders" element={<CustomerOrders />} />
+      <Route path="/customer/orders" element={<CustomerOrders />} />
+      <Route path="/seller/orders" element={<RestaurantOrders />} />
 
-      <Route path="*" element={<h1>404</h1>} />
+      <Route path="*" element={<h1>Error 404: page not found</h1>} />
     </Routes>
   );
 }

@@ -22,6 +22,6 @@ export async function getRestaurantOrdersApi() {
 }
 
 export async function updateOrderStatusApi(id, payload) {
-  const response = await http.put(`/api/orders/${id}`, payload);
+  const response = await http.put(`/api/orders/${id}/status`, payload);
   return response.data;
 }

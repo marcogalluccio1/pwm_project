@@ -230,7 +230,7 @@ export default function Checkout() {
       const created = await createOrderApi(payload);
 
       const orderId = created?.order?._id || created?.order?.id || created?._id || created?.id;
-      navigate("/orders", { state: { highlightId: orderId || null } });
+      navigate("/customer/orders", { state: { highlightId: orderId || null } });
     } catch {
       setError("Order creation failed. Please try again.");
     } finally {

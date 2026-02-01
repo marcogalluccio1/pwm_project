@@ -1,0 +1,67 @@
+@import "../../styles/ordersPage.css";
+
+.restaurantOrders .orderInfoRow {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.orderMeals {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.orderMealsTitle {
+  font-weight: 1000;
+  font-size: 16px;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
+.orderMealsEmpty {
+  opacity: 0.8;
+  font-weight: 800;
+}
+
+.orderMealsList {
+  display: grid;
+  gap: 8px;
+}
+
+.orderMealRow {
+  margin: 1px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.orderMealLeft {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.orderMealQty {
+  font-weight: 1100;
+  font-size: 14px;
+  opacity: 0.9;
+  flex: 0 0 auto;
+}
+
+.orderMealName {
+  font-weight: 900;
+  font-size: 14px;
+  opacity: 0.9;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
