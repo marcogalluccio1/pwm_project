@@ -1,0 +1,554 @@
+.ordersPage {
+  min-height: 100vh;
+}
+
+.ordersWrap {
+  width: min(1200px, calc(100% - 24px));
+  margin: 0 auto;
+  padding: 18px 0 28px;
+}
+
+.ordersHeader {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.ordersBack {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  cursor: pointer;
+}
+
+.ordersTitle {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+}
+
+.ordersSubtitle {
+  margin: 4px 0 0;
+  opacity: 0.85;
+}
+
+.ordersLink {
+  text-decoration: none;
+  font-weight: 900;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+}
+
+.ordersGrid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 14px;
+  align-items: start;
+}
+
+.orderTrackOuter {
+  margin-top: 14px;
+  padding: 10px 16px 10px;
+}
+
+.orderTrack {
+  width: 100%;
+}
+
+.orderTrackBar {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  box-sizing: border-box;
+
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 34px;
+}
+
+.orderTrackFill {
+  height: 100%;
+  width: 0%;
+  background: rgba(255, 188, 13, 0.45);
+  border-radius: 999px;
+}
+
+.orderTrackSteps {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.orderTrackStep {
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: translateY(-50%);
+  opacity: 1;
+}
+
+.orderTrackStep:first-child {
+  justify-items: start;
+  transform: translate(0, -50%);
+}
+
+.orderTrackStep:last-child {
+  justify-items: end;
+  transform: translate(-100%, -50%);
+}
+
+.orderTrackStep.isDone {
+  opacity: 1;
+}
+
+.orderTrackDot {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(20, 20, 22, 0.95);
+
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.orderTrackStep.isDone .orderTrackDot {
+  border-color: rgba(255, 188, 13, 0.75);
+  background: rgba(255, 188, 13, 0.28);
+}
+
+.orderTrackLabel {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.1;
+
+  max-width: min(120px, 24vw);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.orderTrackLabel.isFirst {
+  text-align: left;
+}
+
+.orderTrackStep.isFirst .orderTrackDot {
+  transform: translate(0, -50%);
+}
+
+.orderTrackLabel.isLast {
+  text-align: right;
+}
+
+.orderTrackStep.isLast .orderTrackDot {
+  transform: translate(-100%, -50%);
+}
+
+.orderTrackStep.isDone .orderTrackDot {
+  border-color: rgba(255, 188, 13, 0.75);
+  background: rgba(255, 188, 13, 0.28);
+}
+
+.orderTrackStep.isFirst .orderTrackLabel {
+  transform: translateX(0);
+  text-align: left;
+}
+
+.orderTrackStep.isLast .orderTrackLabel {
+  transform: translateX(-100%);
+  text-align: right;
+}
+
+@media (max-width: 520px) {
+  .orderTrackOuter {
+    padding: 0 12px 6px;
+  }
+
+  .orderTrackLabel {
+    font-size: 11px;
+    max-width: min(92px, 30vw);
+  }
+}
+
+
+
+@media (max-width: 980px) {
+  .ordersGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ordersLeft {
+  display: grid;
+  gap: 14px;
+}
+
+.ordersRight {
+  width: 360px;
+  justify-self: end;
+  align-self: start;
+}
+
+@media (max-width: 980px) {
+  .ordersRight {
+    width: 100%;
+    justify-self: stretch;
+  }
+}
+
+@media (min-width: 981px) {
+  .ordersRight {
+    position: sticky;
+    top: 90px;
+  }
+}
+
+.ordersSectionHead {
+  display: grid;
+  gap: 6px;
+}
+
+.ordersSectionTitle {
+  font-weight: 1000;
+  font-size: 18px;
+}
+
+.ordersSectionHint {
+  opacity: 0.85;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.ordersDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.ordersList {
+  display: grid;
+  gap: 12px;
+}
+
+.orderRow {
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.orderRow--highlight {
+  border-color: rgba(255, 188, 13, 0.45);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.orderRowTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.orderRowTitle {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 1000;
+}
+
+.orderRowTitleText {
+  display: inline-block;
+  max-width: 56ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orderRowSub {
+  margin-top: 4px;
+  opacity: 0.85;
+  font-weight: 700;
+}
+
+.orderRowRight {
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+}
+
+.orderMeta {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  opacity: 0.9;
+  font-weight: 800;
+}
+
+.orderTotal {
+  font-weight: 1000;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.orderRowGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .orderRowGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.orderField {
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.04);
+  display: grid;
+  gap: 6px;
+}
+
+.orderFieldLabel {
+  opacity: 0.78;
+  font-weight: 900;
+}
+
+.orderFieldValue {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 1000;
+}
+
+.orderProgress {
+  margin-top: 12px;
+}
+
+.orderProgressSteps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.orderStep {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  opacity: 0.6;
+  font-weight: 900;
+  text-align: center;
+}
+
+.orderStep.isDone {
+  opacity: 1;
+}
+
+.orderDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.orderStep.isDone .orderDot {
+  border-color: rgba(255, 188, 13, 0.65);
+  background: rgba(255, 188, 13, 0.25);
+}
+
+.orderStepLabel {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.orderProgressBar {
+  margin-top: 10px;
+  height: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.orderProgressFill {
+  height: 100%;
+  width: 0%;
+  background: rgba(255, 188, 13, 0.45);
+}
+
+.cartHoverIcon {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: default;
+}
+
+.cartHoverIcon__panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: min(360px, calc(100vw - 24px));
+  z-index: 30;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(20, 20, 22, 0.92);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.42);
+  display: none;
+}
+
+.cartHoverIcon:hover .cartHoverIcon__panel {
+  display: block;
+}
+
+
+.cartHoverIcon__title {
+  font-weight: 1000;
+  margin-bottom: 8px;
+}
+
+.cartHoverIcon__empty {
+  opacity: 0.85;
+  font-weight: 700;
+  padding: 8px 0;
+}
+
+.cartHoverIcon__list {
+  display: grid;
+  gap: 8px;
+}
+
+.cartHoverIcon__item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cartHoverIcon__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cartHoverIcon__qty {
+  font-weight: 1000;
+  opacity: 0.9;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cartHoverIcon__name {
+  font-weight: 1000;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cartHoverIcon__price {
+  font-weight: 1000;
+  color: var(--accent);
+  white-space: nowrap;
+  text-align: right;
+}
+
+
+.ordersStat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  margin-bottom: 5px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 900;
+}
+
+.ordersStat--link {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ordersStat--link:hover {
+  opacity: 0.85;
+}
+
+.orderInfoRow {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .orderInfoRow {
+    grid-template-columns: 1fr;
+  }
+  .orderCartCell {
+    justify-self: start;
+  }
+}
+
+.orderCartCell {
+  align-self: start;
+  justify-self: end;
+  padding-top: 22px;
+}
+
+@media (max-width: 900px) {
+  .orderCartCell {
+    padding-top: 0;
+  }
+}
+
+.checkoutCard.ordersLeft {
+  overflow: visible;
+}
+
+.ordersList {
+  overflow: visible;
+}

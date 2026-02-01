@@ -8,6 +8,10 @@ export default function TopBar({ variant = "default" }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  
+  const role = String(user?.role || "").toLowerCase();
+  const isCustomer = role === "customer";
+
   const isBrandOnly = variant === "brandOnly";
 
   const handleLogout = () => {
@@ -18,7 +22,6 @@ export default function TopBar({ variant = "default" }) {
   return (
     <header className="topbar">
       <div className="topbar__inner">
-        {/* left */}
         <Link to="/" className="topbar__logo">
           <img src={logo} alt="FastFood logo" className="topbar__logo-img" />
           <div className="topbar__title">
@@ -26,7 +29,6 @@ export default function TopBar({ variant = "default" }) {
           </div>
         </Link>
 
-        {/* center */}
         <div className="topbar__center">
           {isBrandOnly ? null : (
             <nav className="topbar__nav" aria-label="Sezioni principali">
@@ -50,7 +52,6 @@ export default function TopBar({ variant = "default" }) {
           )}
         </div>
 
-        {/* right */}
         <div className="topbar__actions">
           {isBrandOnly ? null : user ? (
             <div className="userMenu">
@@ -72,6 +73,13 @@ export default function TopBar({ variant = "default" }) {
                 <Link to="/me" className="userMenu__item">
                   Modifica dati account
                 </Link>
+
+                {isCustomer ? (
+                  <Link to="/orders" className="userMenu__item">
+                    I tuoi ordini
+                  </Link>
+                  ) : ""
+                }
 
                 <button
                   type="button"

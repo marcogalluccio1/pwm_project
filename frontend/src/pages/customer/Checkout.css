@@ -29,15 +29,13 @@
 
 .checkoutTitle {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
   letter-spacing: -0.02em;
-  color: rgba(255, 255, 255, 0.95);
 }
 
 .checkoutSubtitle {
   margin: 4px 0 0;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.65);
+  opacity: 0.85;
 }
 
 .checkoutLink {
@@ -87,8 +85,8 @@
 }
 
 .checkoutCardTitle {
-  margin: 0;
-  font-size: 15px;
+  margin: 1px;
+  font-size: 20px;
   color: rgba(255, 255, 255, 0.92);
 }
 
