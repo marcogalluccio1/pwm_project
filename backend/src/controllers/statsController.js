@@ -11,7 +11,6 @@ export const getMyRestaurantStats = async (req, res) => {
 
     const restaurantObjectId = new mongoose.Types.ObjectId(restaurant._id);
 
-    //tootal number of orders and  revenue
     const totalsAgg = await Order.aggregate([
       { $match: { restaurantId: restaurantObjectId } },
       {
@@ -25,8 +24,8 @@ export const getMyRestaurantStats = async (req, res) => {
 
     const totalOrders = totalsAgg[0]?.totalOrders ?? 0;
     const revenueTotal = totalsAgg[0]?.revenueTotal ?? 0;
+    const avgOrderValue = totalOrders > 0 ? revenueTotal / totalOrders : 0;
 
-    //orders by status
     const byStatusAgg = await Order.aggregate([
       { $match: { restaurantId: restaurantObjectId } },
       { $group: { _id: "$status", count: { $sum: 1 } } },
@@ -45,7 +44,6 @@ export const getMyRestaurantStats = async (req, res) => {
       }
     }
 
-    //top meals sold
     const topMealsAgg = await Order.aggregate([
       { $match: { restaurantId: restaurantObjectId } },
       { $unwind: "$items" },
@@ -74,6 +72,7 @@ export const getMyRestaurantStats = async (req, res) => {
       restaurant: { id: restaurant._id, name: restaurant.name },
       totalOrders,
       revenueTotal,
+      avgOrderValue,
       ordersByStatus,
       topMeals,
     });

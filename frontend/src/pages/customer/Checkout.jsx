@@ -37,6 +37,27 @@ function getMealPriceNumber(m) {
   return Number.isFinite(raw) ? raw : 0;
 }
 
+const PAYMENT_LABELS = {
+  card: "Carta",
+  cash: "Contanti",
+  prepaid: "Carta prepagata",
+};
+
+function getPaymentMethod(source) {
+  if (!source) return "";
+  return (
+    source?.payment?.method ||
+    source?.paymentMethod ||
+    ""
+  );
+}
+
+function getPaymentLabelFrom(source) {
+  const method = getPaymentMethod(source);
+  return PAYMENT_LABELS[method] || "—";
+}
+
+
 function hasPaymentMethod(user) {
   const pm =
     user?.paymentMethod ??
@@ -388,7 +409,7 @@ export default function Checkout() {
 
 
             <div className="checkoutNote">
-              Metodo di pagamento: <strong>{inferPaymentMethod(user)}</strong>
+              Metodo di pagamento: <strong>{getPaymentLabelFrom(user)}</strong>
             </div>
           </div>
         </div>

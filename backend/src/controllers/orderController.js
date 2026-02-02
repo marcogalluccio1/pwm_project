@@ -136,16 +136,22 @@ export const createOrder = async (req, res) => {
 
     const total = subtotal;
 
-    const prepMinutes = toNumberEnv("PREP_MINUTES_PER_ORDER", 10);
+    const baseOrderMinutes = toNumberEnv("PREP_BASE_MINUTES_PER_ORDER", 3);
+    const perItemMinutes = toNumberEnv("PREP_MINUTES_PER_ITEM", 2);
 
-    const queueCount = await Order.countDocuments({
-      restaurantId: restaurant._id,
-      status: { $in: ["ordered", "preparing"] },
-    });
+    const queueAgg = await Order.aggregate([
+      { $match: { restaurantId: restaurant._id, status: { $in: ["ordered", "preparing"] } } },
+      { $unwind: "$items" },
+      { $group: { _id: null, totalQty: { $sum: "$items.quantity" } } },
+    ]);
 
-    const waitMinutes = (queueCount + 1) * prepMinutes;
+    const queueQty = queueAgg[0]?.totalQty ?? 0;
+    const newOrderQty = normalized.reduce((s, it) => s + it.quantity, 0);
+
+    const waitMinutes = queueQty * perItemMinutes + newOrderQty * perItemMinutes + baseOrderMinutes;
 
     const estimatedReadyAt = new Date(Date.now() + waitMinutes * 60 * 1000);
+
 
     const order = await Order.create({
       customerId: req.user.id,

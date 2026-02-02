@@ -65,3 +65,45 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.ordersRightStats {
+  margin-top: 14px;
+}
+
+.ordersRightStatsTitle {
+  font-weight: 1000;
+  font-size: 16px;
+  opacity: 0.95;
+  margin-top: 12px;
+  margin-bottom: 10px;
+}
+
+.ordersRightStatsGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.ordersRightStatCard {
+  padding: 12px 12px;
+}
+
+.ordersRightStatLabel {
+  font-weight: 900;
+  opacity: 0.9;
+}
+
+.ordersRightStatValue {
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: 1100;
+}
+
+.ordersRightStatsRaw {
+  margin: 0;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  overflow: auto;
+  max-height: 380px;
+}

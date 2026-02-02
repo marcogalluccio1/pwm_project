@@ -1,15 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { LuPencil, LuX, LuStore, LuChartBar, LuUtensilsCrossed } from "react-icons/lu";
+import { LuPencil, LuX, LuStore, LuPackage, LuUtensilsCrossed } from "react-icons/lu";
 import { useAuth } from "../../auth/useAuth";
 import "../../styles/management.css";
 import TopBar from "../../components/TopBar";
-
-import {
-  getMyRestaurantApi,
-  updateMyRestaurantApi,
-  getMyRestaurantStatsApi,
-} from "../../api/restaurants.api";
+import { getMyRestaurantApi, updateMyRestaurantApi } from "../../api/restaurants.api";
+import { getRestaurantOrdersApi } from "../../api/orders.api";
 
 function formatMoney(value) {
   const num = Number(value);
@@ -17,14 +13,40 @@ function formatMoney(value) {
   return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(num);
 }
 
+
+function formatDateTime(iso) {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleString();
+}
+
+function sumItems(items) {
+  return (items || []).reduce((s, it) => s + (Number(it?.quantity) || 0), 0);
+}
+
+function getCustomerName(o) {
+  const firstName = o?.customerId?.firstName || o?.customer?.firstName || "";
+  const lastName = o?.customerId?.lastName || o?.customer?.lastName || "";
+  const full = `${firstName} ${lastName}`.trim();
+  return full || o?.customerId?.email || o?.customer?.email || "Cliente";
+}
+
+function getOrderId(o) {
+  return String(o?._id || o?.id || "");
+}
+
 export default function RestaurantManagement() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  const isLogged = !!user;
+  const isSeller = user?.role === "seller";
 
   const [restaurant, setRestaurant] = useState(null);
   const [loadingRestaurant, setLoadingRestaurant] = useState(true);
 
-  const [stats, setStats] = useState(null);
-  const [loadingStats, setLoadingStats] = useState(true);
+  const [loadingNextOrders, setLoadingNextOrders] = useState(true);
+  const [nextOrders, setNextOrders] = useState([]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -48,9 +70,11 @@ export default function RestaurantManagement() {
   const [form, setForm] = useState(initialForm);
 
   useEffect(() => {
+    if (isLoading) return;
+    if (!isLogged || !isSeller) return;
+
     async function loadAll() {
       setLoadingRestaurant(true);
-      setLoadingStats(true);
       setErr("");
 
       try {
@@ -65,25 +89,39 @@ export default function RestaurantManagement() {
             city: r.city || "",
           });
         }
+
+        try {
+          setLoadingNextOrders(true);
+          const resOrders = await getRestaurantOrdersApi();
+          const listOrders = resOrders?.orders || resOrders || [];
+          const base = Array.isArray(listOrders) ? [...listOrders] : [];
+
+          const toServe = base.filter((o) => ["ordered", "preparing"].includes(o?.status));
+          toServe.sort((a, b) => {
+            const ta = new Date(a?.estimatedReadyAt || 0).getTime();
+            const tb = new Date(b?.estimatedReadyAt || 0).getTime();
+            if (ta !== tb) return ta - tb;
+            const ca = new Date(a?.createdAt || 0).getTime();
+            const cb = new Date(b?.createdAt || 0).getTime();
+            return ca - cb;
+          });
+
+          setNextOrders(toServe.slice(0, 6));
+        } catch {
+          setNextOrders([]);
+        } finally {
+          setLoadingNextOrders(false);
+        }
       } catch (e) {
         setRestaurant(null);
         setErr(e?.response?.data?.message || "Impossibile caricare il ristorante.");
       } finally {
         setLoadingRestaurant(false);
       }
-
-      try {
-        const s = await getMyRestaurantStatsApi();
-        setStats(s || null);
-      } catch {
-        setStats(null);
-      } finally {
-        setLoadingStats(false);
-      }
     }
 
     loadAll();
-  }, []);
+  }, [isLoading, isLogged, isSeller]);
 
   useEffect(() => {
     if (!msg) return;
@@ -322,64 +360,74 @@ export default function RestaurantManagement() {
                 </div>
               </div>
 
-              <div className="card me__panel card--flat">
-                <div className="me__panelHeader">
-                  <h3 className="me__panelTitle">
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                      <LuChartBar aria-hidden />
-                      Statistiche
-                    </span>
-                  </h3>
-                </div>
-
-                <div className="me__panelDivider" />
-
-                {loadingStats ? (
-                  <p className="me__text">Caricamento statistiche...</p>
-                ) : !stats ? (
-                  <p className="me__text">Statistiche non disponibili.</p>
-                ) : (
-                  <div className="me__actions">
-                    {"totalOrders" in stats || "totalRevenue" in stats || "avgOrderValue" in stats ? (
-                      <>
-                        <div className="card card--flat" style={{ padding: 14 }}>
-                          <div style={{ fontWeight: 900, opacity: 0.9 }}>Ordini totali</div>
-                          <div style={{ fontSize: 28, fontWeight: 1000, marginTop: 6 }}>
-                            {stats.totalOrders ?? "—"}
-                          </div>
-                        </div>
-
-                        <div className="card card--flat" style={{ padding: 14 }}>
-                          <div style={{ fontWeight: 900, opacity: 0.9 }}>Incasso totale</div>
-                          <div style={{ fontSize: 28, fontWeight: 1000, marginTop: 6 }}>
-                            {formatMoney(stats.totalRevenue)}
-                          </div>
-                        </div>
-
-                        <div className="card card--flat" style={{ padding: 14 }}>
-                          <div style={{ fontWeight: 900, opacity: 0.9 }}>Valore medio ordine</div>
-                          <div style={{ fontSize: 28, fontWeight: 1000, marginTop: 6 }}>
-                            {formatMoney(stats.avgOrderValue)}
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <pre
-                        style={{
-                          margin: 0,
-                          padding: 14,
-                          borderRadius: 14,
-                          border: "1px solid rgba(255,255,255,0.14)",
-                          background: "rgba(255,255,255,0.06)",
-                          overflow: "auto",
-                          maxHeight: 380,
-                        }}
-                      >
-                        {JSON.stringify(stats, null, 2)}
-                      </pre>
-                    )}
+              <div className="me__col me__col--right">
+                <div className="card me__panel card--flat">
+                  <div className="me__panelHeader">
+                    <h3 className="me__panelTitle">
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                        <LuPackage aria-hidden />
+                        Ordini
+                      </span>
+                    </h3>
                   </div>
-                )}
+
+                  <div className="me__panelDivider" />
+
+                  {loadingNextOrders ? (
+                    <p className="me__text">Caricamento ordini...</p>
+                  ) : (nextOrders || []).length === 0 ? (
+                    <p className="me__text">Nessun ordine da servire.</p>
+                  ) : (
+                    <div className="me__actions">
+                      {(nextOrders || []).map((o) => (
+                        <div key={getOrderId(o)} className="card card--flat" style={{ padding: 14 }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              gap: 10,
+                              alignItems: "baseline",
+                            }}
+                          >
+                            <div
+                              style={{
+                                fontWeight: 1000,
+                                opacity: 0.9,
+                                minWidth: 0,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                              title={getCustomerName(o)}
+                            >
+                              {getCustomerName(o)}
+                            </div>
+
+                            <div style={{ fontWeight: 1100, opacity: 0.9 }}>{formatMoney(o?.total)}</div>
+                          </div>
+
+                          <div
+                            style={{
+                              marginTop: 6,
+                              display: "flex",
+                              justifyContent: "space-between",
+                              gap: 10,
+                              alignItems: "center",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <div style={{ fontWeight: 900, opacity: 0.85 }}>Orario previsto: {formatDateTime(o?.estimatedReadyAt)}</div>
+                            <div style={{ fontWeight: 900, opacity: 0.85 }}>Articoli: {sumItems(o?.items)}</div>
+                          </div>
+                        </div>
+                      ))}
+
+                      <Link to="/seller/orders" className="btn btn--ghost" style={{ justifyContent: "center" }}>
+                        Visualizza tutti gli ordini
+                      </Link>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

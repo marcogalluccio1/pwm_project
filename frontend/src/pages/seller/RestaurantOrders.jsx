@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LuArrowLeft, LuPackage, LuUser } from "react-icons/lu";
+import { LuArrowLeft, LuPackage, LuUser, LuChartBar, LuUtensilsCrossed } from "react-icons/lu";
 
 import TopBar from "../../components/TopBar";
 import { useAuth } from "../../auth/useAuth";
 import { getRestaurantOrdersApi, updateOrderStatusApi } from "../../api/orders.api";
+import { getMyRestaurantStatsApi } from "../../api/restaurants.api";
 
 import "./RestaurantOrders.css";
 
@@ -12,6 +13,11 @@ function formatEUR(value) {
   const v = Number(value);
   if (!Number.isFinite(v)) return "€0.00";
   return `€${v.toFixed(2)}`;
+}
+
+function safeNum(value, fallback = 0) {
+  const v = Number(value);
+  return Number.isFinite(v) ? v : fallback;
 }
 
 function formatDateTime(iso) {
@@ -88,6 +94,8 @@ export default function RestaurantOrders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [orders, setOrders] = useState([]);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [stats, setStats] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
 
   const sectionOrderedRef = useRef(null);
@@ -96,7 +104,9 @@ export default function RestaurantOrders() {
   const sectionDeliveredRef = useRef(null);
 
   function scrollTo(ref) {
-    ref?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const el = ref?.current;
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   async function loadOrders() {
@@ -114,6 +124,18 @@ export default function RestaurantOrders() {
     }
   }
 
+  async function loadStats() {
+    try {
+      setLoadingStats(true);
+      const s = await getMyRestaurantStatsApi();
+      setStats(s || null);
+    } catch {
+      setStats(null);
+    } finally {
+      setLoadingStats(false);
+    }
+  }
+
   useEffect(() => {
     if (isLoading) return;
 
@@ -128,6 +150,7 @@ export default function RestaurantOrders() {
     if (isLoading) return;
     if (!isLogged || !isSeller) return;
     loadOrders();
+    loadStats();
   }, [isLoading, isLogged, isSeller]);
 
   const grouped = useMemo(() => {
@@ -144,6 +167,26 @@ export default function RestaurantOrders() {
 
     return { ordered, preparing, delivering, delivered };
   }, [orders]);
+
+  const statusCounts = useMemo(() => {
+    const api = stats?.ordersByStatus;
+    if (api && typeof api === "object") {
+      return {
+        ordered: safeNum(api.ordered, 0),
+        preparing: safeNum(api.preparing, 0),
+        delivering: safeNum(api.delivering, 0),
+        delivered: safeNum(api.delivered, 0),
+        fromApi: true,
+      };
+    }
+    return {
+      ordered: grouped.ordered.length,
+      preparing: grouped.preparing.length,
+      delivering: grouped.delivering.length,
+      delivered: grouped.delivered.length,
+      fromApi: false,
+    };
+  }, [stats, grouped]);
 
   async function goNextStatus(order) {
     const id = getOrderId(order);
@@ -174,6 +217,8 @@ export default function RestaurantOrders() {
           Array.isArray(prev) ? prev.map((x) => (getOrderId(x) === id ? { ...x, status: nextStatus } : x)) : []
         );
       }
+
+      loadStats();
     } catch {
       setError("Impossibile aggiornare lo stato dell'ordine.");
     } finally {
@@ -273,37 +318,111 @@ export default function RestaurantOrders() {
               <h2 className="checkoutCardTitle">Riepilogo ordini:</h2>
             </div>
 
-            <button type="button" className="btn btn--ghost ordersStat ordersStat--link" onClick={() => scrollTo(sectionOrderedRef)}>
+            <button
+              type="button"
+              className="btn btn--ghost ordersStat ordersStat--link"
+              onClick={() => scrollTo(sectionOrderedRef)}
+              title={statusCounts.fromApi ? "Conteggio da statistiche API" : "Conteggio da lista ordini"}
+            >
               <span>In carico</span>
-              <strong>{grouped.ordered.length}</strong>
+              <strong>{statusCounts.ordered}</strong>
             </button>
 
             <button
               type="button"
               className="btn btn--ghost ordersStat ordersStat--link"
               onClick={() => scrollTo(sectionPreparingRef)}
+              title={statusCounts.fromApi ? "Conteggio da statistiche API" : "Conteggio da lista ordini"}
             >
               <span>In preparazione</span>
-              <strong>{grouped.preparing.length}</strong>
+              <strong>{statusCounts.preparing}</strong>
             </button>
 
             <button
               type="button"
               className="btn btn--ghost ordersStat ordersStat--link"
               onClick={() => scrollTo(sectionDeliveringRef)}
+              title={statusCounts.fromApi ? "Conteggio da statistiche API" : "Conteggio da lista ordini"}
             >
               <span>In consegna</span>
-              <strong>{grouped.delivering.length}</strong>
+              <strong>{statusCounts.delivering}</strong>
             </button>
 
             <button
               type="button"
               className="btn btn--ghost ordersStat ordersStat--link"
               onClick={() => scrollTo(sectionDeliveredRef)}
+              title={statusCounts.fromApi ? "Conteggio da statistiche API" : "Conteggio da lista ordini"}
             >
               <span>Consegnati</span>
-              <strong>{grouped.delivered.length}</strong>
+              <strong>{statusCounts.delivered}</strong>
             </button>
+
+            <div className="ordersRightStats">
+              <div className="me__panelDivider" />
+
+              <div className="ordersRightStatsTitle">
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                  <LuChartBar aria-hidden />
+                  Statistiche
+                </span>
+              </div>
+
+              {loadingStats ? (
+                <div className="me__text">Caricamento statistiche...</div>
+              ) : !stats ? (
+                <div className="me__text">Statistiche non disponibili.</div>
+              ) : (
+                <>
+                  <div className="ordersRightStatsGrid">
+                    <div className="card card--flat ordersRightStatCard">
+                      <div className="ordersRightStatLabel">Ordini totali:</div>
+                      <div className="ordersRightStatValue">{safeNum(stats.totalOrders, 0)}</div>
+                    </div>
+
+                    <div className="card card--flat ordersRightStatCard">
+                      <div className="ordersRightStatLabel">Incasso totale:</div>
+                      <div className="ordersRightStatValue">{formatEUR(stats.revenueTotal)}</div>
+                    </div>
+
+                    <div className="card card--flat ordersRightStatCard">
+                      <div className="ordersRightStatLabel">Valore medio ordine:</div>
+                      <div className="ordersRightStatValue">{formatEUR(stats.avgOrderValue)}</div>
+                    </div>
+                  </div>
+
+                  <div className="me__divider" />
+
+                  <div className="orderMealsTitle" style={{ marginTop: 2 }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                      <LuUtensilsCrossed aria-hidden />
+                      Piatti più venduti:
+                    </span>
+                    
+                  </div>
+
+                  {Array.isArray(stats.topMeals) && stats.topMeals.length > 0 ? (
+                    <div className="orderMeals">
+                      <div className="orderMealsList">
+                        {stats.topMeals.map((m) => (
+                          <div className="orderMealRow" key={String(m.mealId)}>
+                            <div className="orderMealLeft">
+                              <span className="orderMealQty">{safeNum(m.totalQuantity, 0)}x</span>
+                              <span className="orderMealName" title={m?.name || ""}>
+                                {m?.name || "Piatto"}
+                              </span>
+                            </div>
+                            <div className="orderMealQty">{formatEUR(m.totalRevenue)}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="me__text">Nessun dato sui piatti.</div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -345,16 +464,14 @@ function OrderRow({ order, showNext, onNext, isUpdating }) {
   const items = Array.isArray(order?.items) ? order.items : [];
   const itemCount = sumItems(items);
 
-  const mealsSorted = useMemo(() => {
-    const arr = [...items];
-    arr.sort((a, b) => (Number(b?.quantity) || 0) - (Number(a?.quantity) || 0));
-    return arr;
-  }, [items]);
+  const mealsSorted = [...items].sort((a, b) => (Number(b?.quantity) || 0) - (Number(a?.quantity) || 0));
 
   const nextLabel =
-    order?.status === "ordered"
-      ? "Passa a In preparazione"
-      : order?.status === "preparing"
+  order?.status === "ordered"
+    ? "Passa a In preparazione"
+    : order?.status === "preparing" && order?.fulfillment === "pickup"
+      ? "Consegnato"
+      : order?.status === "preparing" && order?.fulfillment === "delivery" //delivery still notimplemented
         ? "Passa a In consegna"
         : null;
 
@@ -392,7 +509,6 @@ function OrderRow({ order, showNext, onNext, isUpdating }) {
           <div className="orderFieldLabel">Metodo di pagamento:</div>
           <div className="orderFieldValue">{getPaymentLabel(order)}</div>
         </div>
-
       </div>
 
       <div className="orderMeals">
@@ -401,7 +517,6 @@ function OrderRow({ order, showNext, onNext, isUpdating }) {
         {mealsSorted.length === 0 ? (
           <div className="orderMealsEmpty">Nessun elemento.</div>
         ) : (
-          
           <div className="orderMealsList">
             {mealsSorted.map((it, idx) => (
               <div key={`${it?.mealId || idx}`} className="orderMealRow">
