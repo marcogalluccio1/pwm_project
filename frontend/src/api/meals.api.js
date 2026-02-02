@@ -14,3 +14,8 @@ export async function getMealByIdApi(id) {
   const { data } = await http.get(`/api/meals/${id}`);
   return data?.meal || data;
 }
+
+export async function createCustomMealApi(payload) {
+  const response = await http.post("/api/meals", payload);
+  return response.data;
+}

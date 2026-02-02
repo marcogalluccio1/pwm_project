@@ -25,6 +25,10 @@ function sumItems(items) {
   return (items || []).reduce((s, it) => s + (Number(it?.quantity) || 0), 0);
 }
 
+function getRestaurantId(r) {
+  return String(r?._id || r?.id || "");
+}
+
 function getCustomerName(o) {
   const firstName = o?.customerId?.firstName || o?.customer?.firstName || "";
   const lastName = o?.customerId?.lastName || o?.customer?.lastName || "";
@@ -353,8 +357,8 @@ export default function RestaurantManagement() {
                     </Link>
                   </div>
                   <div className="me__footerRight">
-                    <Link to="/" className="btn btn--ghost">
-                      Home
+                    <Link to={`/restaurants/${getRestaurantId(restaurant)}`} className="btn btn--ghost">
+                      Pagina pubblica
                     </Link>
                   </div>
                 </div>
@@ -377,56 +381,55 @@ export default function RestaurantManagement() {
                     <p className="me__text">Caricamento ordini...</p>
                   ) : (nextOrders || []).length === 0 ? (
                     <p className="me__text">Nessun ordine da servire.</p>
-                  ) : (
-                    <div className="me__actions">
-                      {(nextOrders || []).map((o) => (
-                        <div key={getOrderId(o)} className="card card--flat" style={{ padding: 14 }}>
+                  ) : "" }
+                  <div className="me__actions">
+                    {(nextOrders || []).map((o) => (
+                      <div key={getOrderId(o)} className="card card--flat" style={{ padding: 14 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            gap: 10,
+                            alignItems: "baseline",
+                          }}
+                        >
                           <div
                             style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              gap: 10,
-                              alignItems: "baseline",
+                              fontWeight: 1000,
+                              opacity: 0.9,
+                              minWidth: 0,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
                             }}
+                            title={getCustomerName(o)}
                           >
-                            <div
-                              style={{
-                                fontWeight: 1000,
-                                opacity: 0.9,
-                                minWidth: 0,
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                              }}
-                              title={getCustomerName(o)}
-                            >
-                              {getCustomerName(o)}
-                            </div>
-
-                            <div style={{ fontWeight: 1100, opacity: 0.9 }}>{formatMoney(o?.total)}</div>
+                            {getCustomerName(o)}
                           </div>
 
-                          <div
-                            style={{
-                              marginTop: 6,
-                              display: "flex",
-                              justifyContent: "space-between",
-                              gap: 10,
-                              alignItems: "center",
-                              flexWrap: "wrap",
-                            }}
-                          >
-                            <div style={{ fontWeight: 900, opacity: 0.85 }}>Orario previsto: {formatDateTime(o?.estimatedReadyAt)}</div>
-                            <div style={{ fontWeight: 900, opacity: 0.85 }}>Articoli: {sumItems(o?.items)}</div>
-                          </div>
+                          <div style={{ fontWeight: 1100, opacity: 0.9 }}>{formatMoney(o?.total)}</div>
                         </div>
-                      ))}
 
-                      <Link to="/seller/orders" className="btn btn--ghost" style={{ justifyContent: "center" }}>
-                        Visualizza tutti gli ordini
-                      </Link>
-                    </div>
-                  )}
+                        <div
+                          style={{
+                            marginTop: 6,
+                            display: "flex",
+                            justifyContent: "space-between",
+                            gap: 10,
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          <div style={{ fontWeight: 900, opacity: 0.85 }}>Orario previsto: {formatDateTime(o?.estimatedReadyAt)}</div>
+                          <div style={{ fontWeight: 900, opacity: 0.85 }}>Articoli: {sumItems(o?.items)}</div>
+                        </div>
+                      </div>
+                    ))}
+
+                    <Link to="/seller/orders" className="btn btn--ghost" style={{ justifyContent: "center" }}>
+                      Visualizza tutti gli ordini
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { LuPencil, LuPlus, LuX, LuSearch } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
+import { LuArrowLeft, LuPencil, LuPlus, LuX, LuSearch } from "react-icons/lu";
 
 import TopBar from "../../components/TopBar";
 import { listSelectableMealsApi } from "../../api/meals.api";
@@ -223,6 +223,10 @@ export default function RestaurantMenu() {
             </div>
 
             <div className="menuPage__headerActions">
+              <button className="btn btn--ghost" type="button" onClick={() => navigate(-1)}>
+              <LuArrowLeft aria-hidden />
+              Indietro
+              </button>
               <button
                 type="button"
                 className={`me__editBtn ${isEditing ? "is-active" : ""}`}
@@ -368,21 +372,17 @@ export default function RestaurantMenu() {
                   type="button"
                   className="btn btn--secondary menuCard__addBtn"
                   onClick={() => navigate("/seller/restaurant/menu/new")}
-                  title="Aggiungi un nuovo piatto"
-                  aria-label="Aggiungi un nuovo piatto"
+                  title="Crea un nuovo piatto"
+                  aria-label="Crea un nuovo piatto"
                 >
                   <LuPlus aria-hidden />
-                  Aggiungi piatto
+                  Crea un nuovo piatto
                 </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <Link to="/seller/restaurant" className="menuPage__backBtn btn btn--ghost">
-        Torna al tuo ristorante
-      </Link>
     </div>
   );
 }

@@ -1,0 +1,60 @@
+.newMeal__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.newMeal__title {
+  text-align: left;
+}
+
+.newMeal__subtitle {
+  margin-left: 0;
+}
+
+.newMeal__thumbRow {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.newMeal__thumbInput {
+  flex: 1;
+  min-width: 0;
+}
+
+.newMeal__thumbBox {
+  width: 92px;
+  height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.newMeal__thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.newMeal__thumbPlaceholder {
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0.6;
+  text-align: center;
+  padding: 6px;
+  white-space: pre-line;
+}
+
+.newMeal__btnInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
