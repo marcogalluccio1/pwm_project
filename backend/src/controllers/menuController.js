@@ -79,7 +79,7 @@ export const setMyMenu = async (req, res) => {
 export const getRestaurantMenu = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, category, ingredient, minPrice, maxPrice } = req.query;
+    const { name, category, minPrice, maxPrice } = req.query;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ message: "Restaurant not found" });
@@ -95,13 +95,6 @@ export const getRestaurantMenu = async (req, res) => {
     if (!restaurant) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
-
-    const ingList = ingredient
-      ? String(ingredient)
-          .split(",")
-          .map((s) => s.trim().toLowerCase())
-          .filter(Boolean)
-      : [];
 
     const menu = (restaurant.menuItems || [])
       .filter((it) => {
@@ -124,14 +117,6 @@ export const getRestaurantMenu = async (req, res) => {
             .includes(String(category).toLowerCase())
         ) {
           return false;
-        }
-
-        if (ingList.length > 0) {
-          const mealIngredients = Array.isArray(meal.ingredients)
-            ? meal.ingredients.map((x) => String(x).toLowerCase())
-            : [];
-          const hasAll = ingList.every((ing) => mealIngredients.includes(ing));
-          if (!hasAll) return false;
         }
 
         return true;

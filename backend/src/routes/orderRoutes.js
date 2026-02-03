@@ -44,7 +44,27 @@ const router = express.Router();
  *                     mealId: { type: string }
  *                     quantity: { type: number }
  *     responses:
- *       201: { description: Created }
+*       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 order:
+ *                   type: object
+ *                   properties:
+ *                     _id: { type: string }
+ *                     customerId: { type: string }
+ *                     restaurantId: { type: string }
+ *                     items: { type: array }
+ *                     fulfillment: { type: string }
+ *                     subtotal: { type: number }
+ *                     deliveryFee: { type: number }
+ *                     total: { type: number }
+ *                     paymentMethod: { type: string }
+ *                     estimatedReadyAt: { type: string }
+ *                     status: { type: string }
  *       400: { description: Invalid input or payment method not set }
  *       401: { description: Missing/invalid token }
  *       403: { description: Forbidden }
@@ -67,7 +87,26 @@ router.post("/", requireAuth, requireRole("customer"), createOrder);
  *             type: string
  *             enum: [active, past]
  *     responses:
- *       200: { description: OK }
+*       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 orders:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id: { type: string }
+ *                       customerId: { type: string }
+ *                       restaurantId: { type: string }
+ *                       items: { type: array }
+ *                       fulfillment: { type: string }
+ *                       total: { type: number }
+ *                       status: { type: string }
+ *                       createdAt: { type: string }
  *       401: { description: Missing/invalid token }
  */
 router.get("/mine", requireAuth, requireRole("customer"), getMyOrders);
@@ -86,7 +125,21 @@ router.get("/mine", requireAuth, requireRole("customer"), getMyOrders);
  *         required: true
  *         schema: { type: string }
  *     responses:
- *       200: { description: OK }
+*       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id: { type: string }
+ *                 customerId: { type: string }
+ *                 restaurantId: { type: string }
+ *                 items: { type: array }
+ *                 fulfillment: { type: string }
+ *                 total: { type: number }
+ *                 status: { type: string }
+ *                 createdAt: { type: string }
  *       401: { description: Missing/invalid token }
  *       403: { description: Forbidden }
  *       404: { description: Not found }
@@ -107,7 +160,25 @@ router.get("/:id", requireAuth, getOrderById);
  *         required: false
  *         schema: { type: string, enum: [ordered, preparing, delivering, delivered] }
  *     responses:
- *       200: { description: OK }
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 orders:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id: { type: string }
+ *                       customerId: { type: string }
+ *                       restaurantId: { type: string }
+ *                       items: { type: array }
+ *                       total: { type: number }
+ *                       status: { type: string }
+ *                       createdAt: { type: string }
  *       401: { description: Missing/invalid token }
  *       403: { description: Forbidden }
  */
@@ -136,7 +207,19 @@ router.get("/restaurant/mine", requireAuth, requireRole("seller"), getMyRestaura
  *             properties:
  *               status: { type: string, enum: [preparing, delivering, delivered] }
  *     responses:
- *       200: { description: OK }
+*       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id: { type: string }
+ *                 customerId: { type: string }
+ *                 restaurantId: { type: string }
+ *                 items: { type: array }
+ *                 total: { type: number }
+ *                 status: { type: string }
  *       400: { description: Invalid transition }
  *       401: { description: Missing/invalid token }
  *       403: { description: Forbidden }
@@ -158,7 +241,17 @@ router.put("/:id/status", requireAuth, requireRole("seller"), updateOrderStatus)
  *         required: true
  *         schema: { type: string }
  *     responses:
- *       200: { description: OK }
+*       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id: { type: string }
+ *                 customerId: { type: string }
+ *                 restaurantId: { type: string }
+ *                 status: { type: string }
  *       400: { description: Order is not delivering }
  *       401: { description: Missing/invalid token }
  *       403: { description: Forbidden }

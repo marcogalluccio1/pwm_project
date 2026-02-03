@@ -32,7 +32,22 @@ const router = express.Router();
 *               lastName: { type: string }
 *               vatNumber: { type: string, description: "Required if role is seller" }
 *     responses:
-*       201: { description: Created (returns token + user) }
+*       201:
+*         description: Created (returns token + user)
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 token: { type: string }
+*                 user:
+*                   type: object
+*                   properties:
+*                     id: { type: string }
+*                     email: { type: string }
+*                     role: { type: string }
+*                     firstName: { type: string }
+*                     lastName: { type: string }
 *       400: { description: Invalid input data }
 *       409: { description: Email already registered }
 */
@@ -55,7 +70,22 @@ router.post("/register", register);
  *               email: { type: string }
  *               password: { type: string }
  *     responses:
- *       200: { description: OK (returns token + user) }
+ *       200:
+ *         description: OK (returns token + user)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token: { type: string }
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id: { type: string }
+ *                     email: { type: string }
+ *                     role: { type: string }
+ *                     firstName: { type: string }
+ *                     lastName: { type: string }
  *       400: { description: Missing or invalid data }
  *       401: { description: Invalid credentials }
  */
@@ -70,7 +100,24 @@ router.post("/login", login);
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       200: { description: OK (returns user profile) }
+ *       200:
+ *         description: OK (returns user profile)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id: { type: string }
+ *                     email: { type: string }
+ *                     role: { type: string }
+ *                     firstName: { type: string }
+ *                     lastName: { type: string }
+ *                     vatNumber: { type: string }
+ *                     payment: { type: object }
+ *                     preferences: { type: object }
  *       401: { description: Missing or invalid token }
  */
 router.get("/me", requireAuth, me);
@@ -112,7 +159,24 @@ router.get("/me", requireAuth, me);
 *                     items: { type: string }
 *                   marketingOptIn: { type: boolean }
 *     responses:
-*       200: { description: OK (returns updated user) }
+*       200:
+*         description: OK (returns updated user)
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 user:
+*                   type: object
+*                   properties:
+*                     id: { type: string }
+*                     email: { type: string }
+*                     role: { type: string }
+*                     firstName: { type: string }
+*                     lastName: { type: string }
+*                     vatNumber: { type: string }
+*                     payment: { type: object }
+*                     preferences: { type: object }
 *       400: { description: Invalid input data }
 *       401: { description: Missing or invalid token }
 *       409: { description: Email already registered }

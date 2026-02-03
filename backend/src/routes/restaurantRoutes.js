@@ -41,7 +41,22 @@ const router = express.Router();
 *         schema: { type: string }
 *         description: Filter restaurants that have this meal in their menu
 *     responses:
-*       200: { description: OK (list of restaurants) }
+*       200:
+*         description: OK (list of restaurants)
+*         content:
+*           application/json:
+*             schema:
+*               type: array
+*               items:
+*                 type: object
+*                 properties:
+*                   _id: { type: string }
+*                   sellerId: { type: string }
+*                   name: { type: string }
+*                   phone: { type: string }
+*                   address: { type: string }
+*                   city: { type: string }
+*                   menuItems: { type: array }
 */
 router.get("/", getRestaurants);
 
@@ -54,7 +69,20 @@ router.get("/", getRestaurants);
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       200: { description: OK (restaurant or null) }
+ *       200:
+ *         description: OK (restaurant or null)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id: { type: string }
+ *                 sellerId: { type: string }
+ *                 name: { type: string }
+ *                 phone: { type: string }
+ *                 address: { type: string }
+ *                 city: { type: string }
+ *                 menuItems: { type: array }
  *       401: { description: Missing or invalid token }
  *       403: { description: Forbidden (not seller) }
  */
@@ -81,7 +109,20 @@ router.get("/mine", requireAuth, requireRole("seller"), getMyRestaurant);
  *               address: { type: string }
  *               city: { type: string }
  *     responses:
- *       201: { description: Created (restaurant created) }
+ *       201:
+ *         description: Created (restaurant created)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id: { type: string }
+ *                 sellerId: { type: string }
+ *                 name: { type: string }
+ *                 phone: { type: string }
+ *                 address: { type: string }
+ *                 city: { type: string }
+ *                 menuItems: { type: array }
  *       400: { description: Invalid input data }
  *       401: { description: Missing or invalid token }
  *       403: { description: Forbidden (not seller) }
@@ -109,7 +150,20 @@ router.post("/", requireAuth, requireRole("seller"), createRestaurant);
  *               address: { type: string }
  *               city: { type: string }
  *     responses:
- *       200: { description: OK (updated restaurant) }
+ *       200:
+ *         description: OK (updated restaurant)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id: { type: string }
+ *                 sellerId: { type: string }
+ *                 name: { type: string }
+ *                 phone: { type: string }
+ *                 address: { type: string }
+ *                 city: { type: string }
+ *                 menuItems: { type: array }
  *       400: { description: Invalid input data }
  *       401: { description: Missing or invalid token }
  *       403: { description: Forbidden (not seller) }
@@ -143,7 +197,21 @@ router.delete("/mine", requireAuth, requireRole("seller"), deleteMyRestaurant);
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       200: { description: OK }
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 menu:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       meal:
+ *                         type: object
+ *                       price: { type: number }
  *       401: { description: Missing or invalid token }
  *       403: { description: Forbidden (not seller) }
  *       404: { description: Restaurant not found }
@@ -159,7 +227,23 @@ router.get("/mine/menu", requireAuth, requireRole("seller"), getMyRestaurantMenu
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       200: { description: OK (stats) }
+ *       200:
+ *         description: OK (stats)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 restaurant:
+ *                   type: object
+ *                   properties:
+ *                     id: { type: string }
+ *                     name: { type: string }
+ *                 totalOrders: { type: number }
+ *                 revenueTotal: { type: number }
+ *                 avgOrderValue: { type: number }
+ *                 ordersByStatus: { type: object }
+ *                 topMeals: { type: array }
  *       401: { description: Missing or invalid token }
  *       403: { description: Forbidden (not seller) }
  *       404: { description: Restaurant not found }
@@ -192,7 +276,17 @@ router.get("/mine/stats", requireAuth, requireRole("seller"), getMyRestaurantSta
  *                     mealId: { type: string }
  *                     price: { type: number }
  *     responses:
- *       200: { description: OK (updated menu items) }
+ *       200:
+ *         description: OK (updated menu items)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   mealId: { type: string }
+ *                   price: { type: number }
  *       400: { description: Invalid input data }
  *       401: { description: Missing or invalid token }
  *       403: { description: Forbidden (not seller or meal not allowed) }
@@ -218,17 +312,27 @@ router.put("/mine/menu", requireAuth, requireRole("seller"), setMyMenu);
 *         name: category
 *         schema: { type: string }
 *       - in: query
-*         name: ingredient
-*         schema: { type: string }
-*         description: Comma-separated ingredients (e.g. "tomato,mozzarella")
-*       - in: query
 *         name: minPrice
 *         schema: { type: number }
 *       - in: query
 *         name: maxPrice
 *         schema: { type: number }
 *     responses:
-*       200: { description: OK }
+*       200:
+*         description: OK
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 menu:
+*                   type: array
+*                   items:
+*                     type: object
+*                     properties:
+*                       meal:
+*                         type: object
+*                       price: { type: number }
 *       404: { description: Restaurant not found }
 */
 router.get("/:id/menu", getRestaurantMenu);
@@ -245,7 +349,20 @@ router.get("/:id/menu", getRestaurantMenu);
  *         required: true
  *         schema: { type: string }
  *     responses:
- *       200: { description: OK (restaurant details) }
+ *       200:
+ *         description: OK (restaurant details)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id: { type: string }
+ *                 sellerId: { type: string }
+ *                 name: { type: string }
+ *                 phone: { type: string }
+ *                 address: { type: string }
+ *                 city: { type: string }
+ *                 menuItems: { type: array }
  *       404: { description: Restaurant not found }
  */
 router.get("/:id", getRestaurantById);

@@ -20,7 +20,22 @@ const router = express.Router();
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       200: { description: OK }
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id: { type: string }
+ *                   name: { type: string }
+ *                   category: { type: string }
+ *                   thumbnailUrl: { type: string }
+ *                   ingredients: { type: array, items: { type: string } }
+ *                   isGlobal: { type: boolean }
+ *                   createdBySellerId: { type: string }
  *       401: { description: Missing or invalid token }
  *       403: { description: Forbidden (not seller) }
  */
@@ -47,7 +62,22 @@ router.get("/mine/custom", requireAuth, requireRole("seller"), getMyCustomMeals)
 *         schema: { type: string }
 *         description: Comma-separated ingredients (e.g. "onion,garlic") - must all be present
 *     responses:
-*       200: { description: OK (list of meals) }
+*       200:
+*         description: OK (list of meals)
+*         content:
+*           application/json:
+*             schema:
+*               type: array
+*               items:
+*                 type: object
+*                 properties:
+*                   _id: { type: string }
+*                   name: { type: string }
+*                   category: { type: string }
+*                   thumbnailUrl: { type: string }
+*                   ingredients: { type: array, items: { type: string } }
+*                   isGlobal: { type: boolean }
+*                   createdBySellerId: { type: string }
 *       400: { description: Invalid query parameters }
 */
 router.get("/", getMeals);
@@ -61,7 +91,20 @@ router.get("/", getMeals);
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       200: { description: OK }
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id: { type: string }
+ *                   name: { type: string }
+ *                   category: { type: string }
+ *                   thumbnailUrl: { type: string }
+ *                   ingredients: { type: array, items: { type: string } }
  *       401: { description: Missing or invalid token }
  *       403: { description: Forbidden (not seller) }
  */
@@ -79,7 +122,20 @@ router.get("/selectable", requireAuth, requireRole("seller"), getSelectableMeals
 *         required: true
 *         schema: { type: string }
 *     responses:
-*       200: { description: OK (meal details) }
+*       200:
+*         description: OK (meal details)
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 _id: { type: string }
+*                 name: { type: string }
+*                 category: { type: string }
+*                 thumbnailUrl: { type: string }
+*                 ingredients: { type: array, items: { type: string } }
+*                 isGlobal: { type: boolean }
+*                 createdBySellerId: { type: string }
 *       404: { description: Meal not found }
 */
 router.get("/:id", getMealById);
@@ -108,7 +164,20 @@ router.get("/:id", getMealById);
 *                 type: array
 *                 items: { type: string }
 *     responses:
-*       201: { description: Created (custom meal created) }
+*       201:
+*         description: Created (custom meal created)
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 _id: { type: string }
+*                 name: { type: string }
+*                 category: { type: string }
+*                 thumbnailUrl: { type: string }
+*                 ingredients: { type: array, items: { type: string } }
+*                 isGlobal: { type: boolean }
+*                 createdBySellerId: { type: string }
 *       400: { description: Invalid input data }
 *       401: { description: Missing or invalid token }
 *       403: { description: Forbidden (not seller) }
@@ -129,7 +198,20 @@ router.post("/", requireAuth, requireRole("seller"), createCustomMeal);
 *         required: true
 *         schema: { type: string }
 *     responses:
-*       200: { description: OK }
+*       200:
+*         description: OK
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 _id: { type: string }
+*                 name: { type: string }
+*                 category: { type: string }
+*                 thumbnailUrl: { type: string }
+*                 ingredients: { type: array, items: { type: string } }
+*                 isGlobal: { type: boolean }
+*                 createdBySellerId: { type: string }
 *       400: { description: Invalid input data }
 *       401: { description: Missing or invalid token }
 *       403: { description: Forbidden (not seller) }
