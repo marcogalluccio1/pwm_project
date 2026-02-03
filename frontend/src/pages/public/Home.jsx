@@ -7,6 +7,9 @@ import { useAuth } from "../../auth/useAuth";
 import { listMealsApi } from "../../api/meals.api";
 import "./Home.css";
 
+import sellerHomeImage from "../../assets/seller_home_image.png";
+import customerHomeImage from "../../assets/customer_home_image.png";
+
 function normalizeMealPreview(m) {
   if (!m) return null;
   const id = String(m?._id || m?.id || "");
@@ -78,7 +81,7 @@ export default function Home() {
         title: "Gestione ordini",
         text: "Visualizza la coda degli ordini e le statistiche del ruo ristorante",
         cta: "Vai alla gestione ordini→",
-        imageUrl: "/src/assets/seller_home_image.png",
+        imageUrl: sellerHomeImage,
         showImage: true
       };
     }
@@ -89,7 +92,7 @@ export default function Home() {
         title: "Ordina ora",
         text: "Scegli un ristorante, aggiungi i piatti e completa l’ordine.",
         cta: "Vai ai ristoranti →",
-        imageUrl: "/src/assets/customer_home_image.png",
+        imageUrl: customerHomeImage,
         showImage: true
       };
     }
