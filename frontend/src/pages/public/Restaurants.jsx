@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LuSearch, LuX } from "react-icons/lu";
 
 import TopBar from "../../components/TopBar";
@@ -18,23 +18,29 @@ function buildCityAddress(r) {
 }
 
 export default function Restaurants() {
+  const location = useLocation();
+
   const [restaurants, setRestaurants] = useState([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [mealFilter, setMealFilter] = useState({ mealId: "", mealName: "" });
+
   const [page, setPage] = useState(1);
   const pageSize = 18;
 
-  async function load(qRaw) {
+  async function load(qRaw, mealIdOverride) {
     setError("");
     setLoading(true);
     try {
       const q = String(qRaw || "").trim();
+      const mealId = String(mealIdOverride || mealFilter.mealId || "").trim();
 
       const data = await listRestaurantsApi({
         name: q || undefined,
         city: q || undefined,
+        mealId: mealId || undefined,
       });
 
       const list = data?.restaurants ?? data;
@@ -48,8 +54,22 @@ export default function Restaurants() {
   }
 
   useEffect(() => {
-    load("");
-  }, []);
+    const sp = new URLSearchParams(location.search);
+    const mealId = String(sp.get("mealId") || "").trim();
+    const mealName = String(sp.get("mealName") || "").trim();
+    const restaurant = String(sp.get("restaurant") || "").trim();
+
+    setMealFilter({ mealId, mealName });
+
+    if (restaurant) {
+      setQuery(restaurant);
+      load(restaurant, mealId);
+      return;
+    }
+
+    setQuery("");
+    load("", mealId);
+  }, [location.search]);
 
   useEffect(() => {
     setPage(1);
@@ -108,7 +128,11 @@ export default function Restaurants() {
         <header className="listPage__header">
           <div>
             <h1 className="listPage__title">Ristoranti</h1>
-            <p className="listPage__subtitle">Ricerca per nome o città.</p>
+            <p className="listPage__subtitle">
+              {mealFilter.mealId
+                ? `Mostrati solo i ristoranti che hanno nel menù: ${mealFilter.mealName || "questo piatto"}.`
+                : "Ricerca per nome o città."}
+            </p>
           </div>
 
           <div className="listPage__search">
@@ -128,7 +152,7 @@ export default function Restaurants() {
                   className="menuSearch__clear"
                   onClick={() => {
                     setQuery("");
-                    load("");
+                    load("", mealFilter.mealId);
                   }}
                   aria-label="Pulisci ricerca"
                   title="Pulisci"
@@ -147,7 +171,9 @@ export default function Restaurants() {
         {loading ? (
           <div className="listPage__state">Caricamento...</div>
         ) : filtered.length === 0 ? (
-          <div className="listPage__state">Nessun ristorante trovato.</div>
+          <div className="listPage__state">
+            {mealFilter.mealId ? "Nessun ristorante ha questo piatto nel menù." : "Nessun ristorante trovato."}
+          </div>
         ) : (
           <>
             <div className="listPage__grid">

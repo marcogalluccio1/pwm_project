@@ -228,7 +228,7 @@ export default function CustomerMe() {
       const status = error?.response?.status;
       const message = error?.response?.data?.message;
 
-      if (status === 409) setErr(message || "Non puoi eliminare l'account con ordini attivi.");
+      if (status === 409) setErr("Non puoi eliminare l'account con ordini attivi.");
       else if (status === 401) setErr("Sessione scaduta. Effettua di nuovo il login.");
       else setErr(message || "Errore durante l'eliminazione account.");
     } finally {

@@ -35,7 +35,8 @@ export default function MealDetails() {
   const navigate = useNavigate();
 
   const [meal, setMeal] = useState(null);
-  const [restaurantName, setRestaurantName] = useState("");
+  const [restaurantRef, setRestaurantRef] = useState({ id: "", name: "" });
+
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
@@ -45,7 +46,6 @@ export default function MealDetails() {
     async function load() {
       setLoading(true);
       setErr("");
-      setRestaurantName("");
 
       try {
         const data = await getMealByIdApi(id);
@@ -61,7 +61,14 @@ export default function MealDetails() {
             const restaurants = Array.isArray(list) ? list : [];
 
             const found = restaurants.find((r) => String(r?.sellerId || "") === norm.createdBySellerId);
-            if (found?.name) setRestaurantName(String(found.name));
+
+            const restaurantId = String(found?._id || found?.id || "");
+            const restaurantName = String(found?.name || "");
+
+            if (restaurantId) {
+              setRestaurantRef({ id: restaurantId, name: restaurantName });
+            }
+
           } catch {
             // optional
           }
@@ -90,16 +97,16 @@ export default function MealDetails() {
   const restaurantButton = (() => {
     if (!meal) return null;
 
-    if (!meal.isGlobal && restaurantName) {
+    if (!meal.isGlobal && restaurantRef?.id) {
       return {
-        label: `Specialità di: ${restaurantName}`,
-        to: `/restaurants?restaurant=${encodeURIComponent(restaurantName)}`,
+        label: `Specialità di: ${restaurantRef.name || "questo ristorante"}`,
+        to: `/restaurants/${restaurantRef.id}`,
       };
     }
 
     return {
-      label: "Vedi ristoranti",
-      to: "/restaurants",
+      label: "Controlla disponibilità nei ristoranti",
+      to: `/restaurants?mealId=${encodeURIComponent(meal.id)}&mealName=${encodeURIComponent(meal.name)}`,
     };
   })();
 
@@ -171,7 +178,6 @@ export default function MealDetails() {
                     <LuTag aria-hidden />
                     {meal.category}
                   </Link>
-                
                 </div>
 
                 <h1 className="mealHero__title">{meal.name}</h1>

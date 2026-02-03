@@ -36,6 +36,10 @@ const router = express.Router();
 *         name: name
 *         schema: { type: string }
 *         description: Filter restaurants by name (partial match)
+*       - in: query
+*         name: mealId
+*         schema: { type: string }
+*         description: Filter restaurants that have this meal in their menu
 *     responses:
 *       200: { description: OK (list of restaurants) }
 */
@@ -162,7 +166,6 @@ router.get("/mine/menu", requireAuth, requireRole("seller"), getMyRestaurantMenu
  */
 router.get("/mine/stats", requireAuth, requireRole("seller"), getMyRestaurantStats);
 
-
 /**
  * @swagger
  * /api/restaurants/mine/menu:
@@ -228,7 +231,6 @@ router.put("/mine/menu", requireAuth, requireRole("seller"), setMyMenu);
 *       200: { description: OK }
 *       404: { description: Restaurant not found }
 */
-
 router.get("/:id/menu", getRestaurantMenu);
 
 /**

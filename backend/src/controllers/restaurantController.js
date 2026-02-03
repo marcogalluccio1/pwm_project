@@ -4,10 +4,24 @@ import Order from "../models/Order.js";
 
 export const getRestaurants = async (req, res) => {
   try {
-    const { city, name } = req.query;
+    const { city, name, mealId } = req.query;
     const filter = {};
     if (city) filter.city = { $regex: city, $options: "i" };
     if (name) filter.name = { $regex: name, $options: "i" };
+
+    if (mealId) {
+      const mealIdStr = String(mealId).trim();
+      const mealIdObj = mongoose.Types.ObjectId.isValid(mealIdStr) ? new mongoose.Types.ObjectId(mealIdStr) : null;
+
+      const candidates = [mealIdStr];
+      if (mealIdObj) candidates.push(mealIdObj);
+
+      filter.$or = [
+        { "menuItems.mealId": { $in: candidates } },
+        { "menu.mealId": { $in: candidates } },
+        { "items.mealId": { $in: candidates } },
+      ];
+    }
 
     const restaurants = await Restaurant.find(filter);
     res.json(restaurants);
@@ -120,6 +134,3 @@ export const deleteMyRestaurant = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-
-
-

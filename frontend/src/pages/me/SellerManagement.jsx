@@ -135,8 +135,13 @@ export default function SellerMe() {
       await deleteMeApi();
       logout();
       navigate("/", { replace: true });
-    } catch (e) {
-      setErr(e?.response?.data?.message || "Impossibile eliminare l'account.");
+    } catch (error) {
+      const status = error?.response?.status;
+      const message = error?.response?.data?.message;
+
+      if (status === 409) setErr("Impossibile eliminare l’account perché il tuo ristorante ha degli ordini attivi.");
+      else if (status === 401) setErr("Sessione scaduta. Effettua di nuovo il login.");
+      else setErr(message || "Errore durante l'eliminazione account.");
     } finally {
       setDeleteBusy(false);
       setDangerOpen(false);

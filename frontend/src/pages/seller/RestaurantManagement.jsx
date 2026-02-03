@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate  } from "react-router-dom";
 import { LuPencil, LuX, LuStore, LuPackage, LuUtensilsCrossed } from "react-icons/lu";
 import { useAuth } from "../../auth/useAuth";
 import "../../styles/management.css";
@@ -42,6 +42,7 @@ function getOrderId(o) {
 
 export default function RestaurantManagement() {
   const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   const isLogged = !!user;
   const isSeller = user?.role === "seller";
@@ -83,16 +84,20 @@ export default function RestaurantManagement() {
 
       try {
         const r = await getMyRestaurantApi();
-        setRestaurant(r || null);
 
-        if (r) {
-          setForm({
-            name: r.name || "",
-            phone: r.phone || "",
-            address: r.address || "",
-            city: r.city || "",
-          });
+        if (!r || !r._id) {
+          navigate("/seller/restaurant/create", { replace: true });
+          return;
         }
+
+        setRestaurant(r);
+
+        setForm({
+          name: r.name || "",
+          phone: r.phone || "",
+          address: r.address || "",
+          city: r.city || "",
+        });
 
         try {
           setLoadingNextOrders(true);
@@ -105,9 +110,7 @@ export default function RestaurantManagement() {
             const ta = new Date(a?.estimatedReadyAt || 0).getTime();
             const tb = new Date(b?.estimatedReadyAt || 0).getTime();
             if (ta !== tb) return ta - tb;
-            const ca = new Date(a?.createdAt || 0).getTime();
-            const cb = new Date(b?.createdAt || 0).getTime();
-            return ca - cb;
+            return new Date(a?.createdAt || 0) - new Date(b?.createdAt || 0);
           });
 
           setNextOrders(toServe.slice(0, 6));
@@ -117,6 +120,11 @@ export default function RestaurantManagement() {
           setLoadingNextOrders(false);
         }
       } catch (e) {
+        if (e?.response?.status === 404) {
+          navigate("/seller/restaurant/create", { replace: true });
+          return;
+        }
+
         setRestaurant(null);
         setErr(e?.response?.data?.message || "Impossibile caricare il ristorante.");
       } finally {
@@ -124,8 +132,9 @@ export default function RestaurantManagement() {
       }
     }
 
+
     loadAll();
-  }, [isLoading, isLogged, isSeller]);
+  }, [isLoading, isLogged, isSeller, navigate]);
 
   useEffect(() => {
     if (!msg) return;
@@ -228,7 +237,6 @@ export default function RestaurantManagement() {
             {msg && <div className="alert alert--success">{msg}</div>}
 
             <div className="me__grid">
-              {/* COLONNA SINISTRA: modifica dati */}
               <div className="me__colLeft">
                 <div className="card me__panel card--flat">
                   <div className="me__panelHeader">
