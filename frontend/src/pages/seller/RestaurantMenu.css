@@ -101,6 +101,18 @@
   position: sticky;
   bottom: 0;
   backdrop-filter: blur(10px);
+}
+
+.menuCard__myMealsBtn {
+  flex-shrink: 0;
+}
+
+.menuCard__footerActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1;
 
   visibility: hidden;
   opacity: 0;
@@ -109,7 +121,7 @@
   transition: opacity 160ms ease, transform 160ms ease;
 }
 
-.menuCard__footer.is-open {
+.menuCard__footerActions.is-open {
   visibility: visible;
   opacity: 1;
   pointer-events: auto;

@@ -360,8 +360,8 @@ export default function RestaurantManagement() {
 
                 <div className="me__footerBar me__footerBar--out">
                   <div className="me__footerLeft">
-                    <Link to="/me" className="btn btn--ghost">
-                      Torna al tuo profilo
+                    <Link to="/" className="btn btn--ghost">
+                      Torna alla home
                     </Link>
                   </div>
                   <div className="me__footerRight">

@@ -1,0 +1,92 @@
+.editMeal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.editMeal__title {
+  margin: 0;
+}
+
+.editMeal__subtitle {
+  margin: 8px 0 0;
+}
+
+.editMeal__thumbRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.editMeal__thumbInput {
+  min-width: 0;
+}
+
+.editMeal__thumbBox {
+  width: 100px;
+  height: 100px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.editMeal__thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.editMeal__thumbPlaceholder {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  padding: 10px;
+}
+
+.editMeal__deleteBtn {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.editMeal__btnInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editMeal__btnInline svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 560px) {
+  .editMeal__header {
+    flex-direction: column;
+  }
+
+  .editMeal__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .editMeal__deleteBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .editMeal__thumbRow {
+    grid-template-columns: 1fr;
+  }
+
+  .editMeal__thumbBox {
+    width: 100%;
+  }
+}

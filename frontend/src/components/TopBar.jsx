@@ -11,6 +11,7 @@ export default function TopBar({ variant = "default" }) {
   
   const role = String(user?.role || "").toLowerCase();
   const isCustomer = role === "customer";
+  const isSeller = role === "seller";
 
   const isBrandOnly = variant === "brandOnly";
 
@@ -78,8 +79,11 @@ export default function TopBar({ variant = "default" }) {
                   <Link to="/customer/orders" className="userMenu__item">
                     I tuoi ordini
                   </Link>
-                  ) : ""
-                }
+                ) : isSeller ? (
+                  <Link to="/seller/restaurant" className="userMenu__item">
+                    Modifica dati ristorante
+                  </Link>
+                ) : null}
 
                 <button
                   type="button"

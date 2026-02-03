@@ -1,0 +1,205 @@
+.promotionsPage {
+  padding-top: 22px;
+  padding-bottom: 40px;
+}
+
+.promotionsHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.promotionsHeader__title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 1000;
+}
+
+.promotionsHeader__subtitle {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.promotionsError {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.promotionsState {
+  padding: 26px 0;
+  text-align: center;
+  opacity: 0.85;
+}
+
+.albumBadge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  border-radius: 999px;
+  color: #000;
+  background: var(--accent);
+  box-shadow: 0 4px 14px rgba(255, 188, 13, 0.45);
+  max-width: calc(100% - 28px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.album {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.album__nav {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 14px;
+}
+
+.album__stage {
+  position: relative;
+  height: 420px;
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.albumImg {
+  position: absolute;
+  width: min(560px, 100%);
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+
+  border: 0;
+  background: transparent;
+  box-shadow: var(--shadow);
+
+  transition: transform 0.32s ease, opacity 0.32s ease, filter 0.32s ease;
+  will-change: transform, opacity;
+}
+
+.albumImg:hover {
+  filter: brightness(1.03);
+}
+
+.albumImg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.albumImg__ph {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  background: var(--panel);
+  color: var(--muted);
+}
+
+.albumImg.is-top {
+  outline: 2px solid rgba(255, 188, 13, 0.25);
+  outline-offset: 3px;
+}
+
+.albumImg.depth-0 {
+  transform: translate(0px, 0px) scale(1);
+  opacity: 1;
+}
+
+.albumImg.depth-1 {
+  transform: translate(14px, 14px) scale(0.985);
+  opacity: 0.96;
+}
+
+.albumImg.depth-2 {
+  transform: translate(28px, 28px) scale(0.97);
+  opacity: 0.90;
+}
+
+.albumImg.depth-3 {
+  transform: translate(42px, 42px) scale(0.955);
+  opacity: 0.84;
+}
+
+.albumImg.depth-4 {
+  transform: translate(56px, 56px) scale(0.94);
+  opacity: 0.78;
+}
+
+.albumImg.is-exiting-right {
+  transform: translate(120px, 0px) scale(1);
+  opacity: 0;
+}
+
+.albumImg.is-exiting-left {
+  transform: translate(-120px, 0px) scale(1);
+  opacity: 0;
+}
+
+.albumDots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+}
+
+.albumDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  cursor: pointer;
+  opacity: 0.45;
+  border: none;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.albumDot:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.albumDot.is-active {
+  opacity: 1;
+  transform: scale(1.1);
+  background: var(--accent);
+}
+
+@media (max-width: 920px) {
+  .album__stage {
+    height: 460px;
+  }
+}
+
+@media (max-width: 560px) {
+  .album {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .album__nav {
+    width: 100%;
+    height: 44px;
+  }
+
+  .album__stage {
+    height: 420px;
+  }
+}

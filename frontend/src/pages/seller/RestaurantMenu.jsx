@@ -252,7 +252,7 @@ export default function RestaurantMenu() {
           <div className="me__panelDivider" />
 
           <div className="menuPage__grid">
-            <div className="card me__panel card--flat menuCard">
+            <div className="menuCard">
               <div className="menuCard__head">
                 <h3 className="me__panelTitle">
                   {isEditing ? "Piatti disponibili" : "Piatti inseriti nel menù"}
@@ -354,30 +354,42 @@ export default function RestaurantMenu() {
                 </div>
               )}
 
-              <div className={`menuCard__footer ${isEditing ? "is-open" : ""}`}>
-                <div className="menuCard__footerLeft">
-                  <button className="btn btn--primary" type="button" onClick={handleSave}>
-                    Salva modifiche
-                  </button>
-
-                  <button className="btn btn--ghost" type="button" onClick={handleCancelEdit}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                      <LuX aria-hidden />
-                      Annulla
-                    </span>
-                  </button>
-                </div>
-
+              <div className="menuCard__footer">
                 <button
                   type="button"
-                  className="btn btn--secondary menuCard__addBtn"
-                  onClick={() => navigate("/seller/restaurant/menu/new")}
-                  title="Crea un nuovo piatto"
-                  aria-label="Crea un nuovo piatto"
+                  className="btn btn--ghost menuCard__myMealsBtn"
+                  onClick={() => navigate("/seller/restaurant/menu/my_meals")}
+                  title="Visualizza i tuoi piatti"
+                  aria-label="Visualizza i tuoi piatti"
                 >
-                  <LuPlus aria-hidden />
-                  Crea un nuovo piatto
+                  I miei piatti
                 </button>
+
+                <div className={`menuCard__footerActions ${isEditing ? "is-open" : ""}`}>
+                  <div className="menuCard__footerLeft">
+                    <button className="btn btn--primary" type="button" onClick={handleSave}>
+                      Salva modifiche
+                    </button>
+
+                    <button className="btn btn--ghost" type="button" onClick={handleCancelEdit}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                        <LuX aria-hidden />
+                        Annulla
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+                  <button
+                    type="button"
+                    className="btn btn--secondary menuCard__addBtn"
+                    onClick={() => navigate("/seller/restaurant/menu/new_meal")}
+                    title="Crea un nuovo piatto"
+                    aria-label="Crea un nuovo piatto"
+                  >
+                    <LuPlus aria-hidden />
+                    Crea un nuovo piatto
+                  </button>
               </div>
             </div>
           </div>

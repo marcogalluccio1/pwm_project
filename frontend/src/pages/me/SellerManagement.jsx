@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { LuStore, LuPencil, LuX } from "react-icons/lu";
+import { LuPencil, LuX } from "react-icons/lu";
 import { useAuth } from "../../auth/useAuth";
 import { updateMeApi, deleteMeApi } from "../../api/auth.api";
-import { getMyRestaurantApi } from "../../api/restaurants.api";
 
 export default function SellerMe() {
   const { user, refreshMe, logout } = useAuth();
@@ -25,9 +24,6 @@ export default function SellerMe() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [isSaving, setIsSaving] = useState(false);
 
-  const [restaurant, setRestaurant] = useState(null);
-  const [loadingRestaurant, setLoadingRestaurant] = useState(true);
-
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
 
@@ -43,20 +39,6 @@ export default function SellerMe() {
     setFieldErrors({});
     setIsEditing(false);
   }, [initial]);
-
-  useEffect(() => {
-    async function loadRestaurant() {
-      try {
-        const data = await getMyRestaurantApi();
-        setRestaurant(data || null);
-      } catch {
-        setRestaurant(null);
-      } finally {
-        setLoadingRestaurant(false);
-      }
-    }
-    loadRestaurant();
-  }, []);
 
   useEffect(() => {
     if (!msg) return;
@@ -159,13 +141,11 @@ export default function SellerMe() {
   return (
     <div className="card me__panel card--flat">
       <h1 className="me__title">Profilo ristoratore</h1>
-      <p className="me__subtitle">Gestisci il tuo account e il tuo ristorante</p>
 
       {err && <div className="alert alert--error">{err}</div>}
       {msg && <div className="alert alert--success">{msg}</div>}
-
-      <div className="me__grid">
-        <div className="me__colLeft">
+      
+      <div className="me__colLeft">
           <div className="card me__panel card--flat">
             <div className="me__panelHeader">
               <h3 className="me__panelTitle">Dati personali</h3>
@@ -347,27 +327,6 @@ export default function SellerMe() {
             </div>
           )}
         </div>
-
-        <Link
-          to={restaurant ? "/seller/restaurant" : "/seller/restaurant/create"}
-          className="me__restaurantSection"
-          aria-label="Vai al ristorante"
-        >
-          <LuStore className="me__restaurantIconSvg" aria-hidden />
-          <div className="me__restaurantText">
-            <div className="me__restaurantTitle">
-              {loadingRestaurant ? "Caricamento..." : restaurant ? restaurant.name : "Registra il tuo ristorante"}
-            </div>
-            <div className="me__restaurantSubtitle">
-              {loadingRestaurant
-                ? "Recupero informazioni..."
-                : restaurant
-                ? "Gestisci info, menù e ordini"
-                : "Non hai ancora un ristorante associato"}
-            </div>
-          </div>
-        </Link>
-      </div>
 
     </div>
   );
