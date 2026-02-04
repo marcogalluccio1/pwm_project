@@ -427,7 +427,6 @@ textarea.input {
   border-color: rgba(255, 59, 59, 0.55);
 }
 
-/*hide "Area personale" text on small screens */
 @media (max-width: 560px) {
   .userMenu__trigger {
     padding: 8px;

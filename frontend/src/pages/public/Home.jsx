@@ -197,7 +197,6 @@ export default function Home() {
         ) : null}
       </main>
 
-      {/* Footer bar: sempre in fondo + bordo full width */}
       <footer className="homeFooter" aria-label="Footer">
         <div className="homeFooter__inner">
           <div className="homeFooter__grid">

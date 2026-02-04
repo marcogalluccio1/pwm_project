@@ -83,3 +83,9 @@ L’applicazione sarà disponibile all’indirizzo:
 `http://localhost:3000`
 
 Il backend espone le API REST e serve anche il frontend compilato.
+
+---
+
+### Relazione
+
+Ulteriori informazioni riguardanti questo progetto sono contenute nel file [a link](https://github.com/marcogalluccio1/pwm_project/blob/main/Relazione_FastFood.pdf)

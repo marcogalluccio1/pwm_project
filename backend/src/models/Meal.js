@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 
 const MealSchema = new mongoose.Schema(
   {
-    sourceId: { type: String, index: true }, //idMeal
-    name: { type: String, required: true, trim: true, index: true }, //strMeal
-    category: { type: String, required: true, trim: true, index: true }, //strCategory
-    thumbnailUrl: { type: String, required: true, trim: true }, //strMealThumb
+    sourceId: { type: String, index: true },
+    name: { type: String, required: true, trim: true, index: true },
+    category: { type: String, required: true, trim: true, index: true },
+    thumbnailUrl: { type: String, required: true, trim: true },
 
     ingredients: [{ type: String, trim: true, index: true }],
 
